@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Management Chatbot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .chat-box { max-height: 500px; overflow-y: auto; background:#f8f9fa; padding:1rem; border-radius:0.5rem;}
+    .user-message { text-align:right; margin-bottom:0.5rem;}
+    .bot-message { text-align:left; margin-bottom:0.5rem;}
+  </style>
+</head>
+<body class="bg-light">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="d-inline-block align-top me-2">
+      OpsVitals
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+       <li class="nav-item"><a class="nav-link text-white" href="/form">Predict Wait Time</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="/doctor_chat">Doctor Chatbot</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="/management_chat">Management Chatbot</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  <div class="container py-4">
+    <h2>Management Chatbot</h2>
+    <div id="chat-box" class="chat-box mb-3">
+      <div class="bot-message chat-message">
+        👋 Hello! I am your AI assistant.
+        {% if form_data %}
+          <br>Patient Context:
+          <ul>
+            {% for k,v in form_data.items() %}
+              <li><strong>{{k}}:</strong> {{v}}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+    <div class="d-flex mb-3">
+      <input type="text" id="user-input" class="form-control me-2" placeholder="Type your message..." onkeydown="if(event.key==='Enter'){sendMessage();}">
+      <button class="btn btn-primary me-2" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+<script>
+async function sendMessage(){
+  const input = document.getElementById("user-input");
+  const msg = input.value.trim();
+  if(!msg) return;
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML += `<div class="user-message chat-message">${msg}</div>`;
+  input.value = "";
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  const role = "Management";
+
+  const resp = await fetch("/get_response", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({message:msg, role:role})
+  });
+  const data = await resp.json();
+  chatBox.innerHTML += `<div class="bot-message chat-message">${data.formatted}</div>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+<!-- Footer -->
+<footer class="bg-primary text-white text-center py-4">
+  <p>&copy; 2025 OpsVitals. All rights reserved.</p>
+  <p>Contact: support@opsvitals.com | Powered by AI</p>
+</footer>
+</body>
+</html>
