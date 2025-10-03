@@ -11,9 +11,10 @@ app = Flask(__name__)
 app.secret_key = "secret_key"
 
 # -----------------------------
-# Load XGBoost model
+# Load Models
 # -----------------------------
-model = joblib.load("tuned_multioutput_xgboost.pkl")
+model = joblib.load("tuned_multioutput_xgboost.pkl")   # wait time prediction model
+triage_model = joblib.load("symptom_triage_model.pkl")  # symptom → department model
 
 # -----------------------------
 # Load knowledge base
@@ -30,49 +31,37 @@ def load_knowledge_base(file_path="hospital_dmaic.txt"):
             if not line:
                 continue
 
-            # Topic
             if line.startswith("# "):
-                # Save previous variant if exists
                 if variant_lines and current_role and current_topic:
                     kb[current_role][current_topic].append("\n".join(variant_lines))
                     variant_lines = []
-
                 current_topic = line[2:].strip()
-                # Initialize topic under both roles
                 kb["Doctor"].setdefault(current_topic, [])
                 kb["Management"].setdefault(current_topic, [])
                 current_role = None
                 continue
 
-            # Role
             if line.startswith("## "):
-                # Save previous variant if exists
                 if variant_lines and current_role and current_topic:
                     kb[current_role][current_topic].append("\n".join(variant_lines))
                     variant_lines = []
-
                 role_name = line[3:].strip()
                 if role_name in kb:
                     current_role = role_name
                 continue
 
-            # Variant marker
             if line.startswith("### Variant"):
-                # Save previous variant
                 if variant_lines and current_role and current_topic:
                     kb[current_role][current_topic].append("\n".join(variant_lines))
                 variant_lines = []
                 continue
 
-            # Otherwise, add line to current variant
             if current_topic and current_role is not None:
                 variant_lines.append(line)
 
-        # Save last variant
         if variant_lines and current_role and current_topic:
             kb[current_role][current_topic].append("\n".join(variant_lines))
 
-    # Ensure each topic has at least one variant per role
     for role in kb:
         for topic in kb[role]:
             if not kb[role][topic]:
@@ -129,6 +118,28 @@ def predict():
         return render_template("predict.html", predictions=None, bottleneck=None, error=str(e))
 
 # -----------------------------
+# Triage Page + API
+# -----------------------------
+@app.route("/triage")
+def triage_page():
+    return render_template("triage.html")
+
+@app.route("/predict_triage", methods=["POST"])
+def predict_triage():
+    try:
+        data = request.get_json()
+        symptom_text = data.get("symptom", "")
+
+        if not symptom_text:
+            return jsonify({"error": "No symptom provided"}), 400
+
+        prediction = triage_model.predict([symptom_text])[0]
+
+        return jsonify({"department": prediction})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# -----------------------------
 # Chatbot pages
 # -----------------------------
 @app.route("/doctor_chat")
@@ -147,9 +158,8 @@ def management_chat():
 @app.route("/get_response", methods=["POST"])
 def get_response():
     user_input = request.json.get("message")
-    role = request.json.get("role")  # Doctor or Management
+    role = request.json.get("role")
 
-    # Match topic from input
     matched_topic = None
     for topic in knowledge_base[role]:
         if topic.lower() in user_input.lower():
@@ -161,7 +171,6 @@ def get_response():
 
     variant_list = knowledge_base[role][matched_topic]
 
-    # Cycle through variants
     last_index = session.get(f"last_variant_index_{role}_{matched_topic}", -1)
     next_index = (last_index + 1) % len(variant_list)
     session[f"last_variant_index_{role}_{matched_topic}"] = next_index
@@ -169,7 +178,6 @@ def get_response():
 
     answer = variant_list[next_index]
 
-    # 🔹 Add emojis before DMAIC steps dynamically
     emoji_map = {
         "Define": "📝 Define",
         "Measure": "📊 Measure",

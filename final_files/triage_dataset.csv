@@ -1,0 +1,181 @@
+symptom,department
+"chest pain and shortness of breath",Cardiology
+"rashes and itching on skin",Dermatology
+"persistent cough and wheezing",Pulmonology
+"frequent headaches and blurred vision",Neurology
+"stomach pain and nausea",Gastroenterology
+"joint pain and stiffness",Orthopedics
+"ear pain and hearing loss",ENT
+"toothache and swollen gums",Dentistry
+"skin infection and boils",Dermatology
+"dizziness and fainting",Neurology
+"chest tightness and palpitations",Cardiology
+"eczema and dry skin",Dermatology
+"chronic cough and fatigue",Pulmonology
+"migraines and light sensitivity",Neurology
+"abdominal cramps and diarrhea",Gastroenterology
+"shoulder pain and limited mobility",Orthopedics
+"tinnitus and ear fullness",ENT
+"dental abscess and jaw pain",Dentistry
+"acne and scarring",Dermatology
+"vertigo and balance issues",Neurology
+"irregular heartbeat and fatigue",Cardiology
+"psoriasis and flaky skin",Dermatology
+"shortness of breath and chest congestion",Pulmonology
+"seizures and confusion",Neurology
+"bloating and acid reflux",Gastroenterology
+"knee pain and swelling",Orthopedics
+"sinus pain and nasal congestion",ENT
+"tooth sensitivity and bleeding gums",Dentistry
+"fungal skin infection and redness",Dermatology
+"memory loss and disorientation",Neurology
+"angina and sweating",Cardiology
+"contact dermatitis and blisters",Dermatology
+"bronchitis and fever",Pulmonology
+"numbness and tingling in hands",Neurology
+"vomiting and dehydration",Gastroenterology
+"back pain and muscle spasms",Orthopedics
+"hearing difficulty and ear discharge",ENT
+"oral ulcers and bad breath",Dentistry
+"cellulitis and swelling",Dermatology
+"syncope and low blood pressure",Neurology
+"heartburn and chest discomfort",Cardiology
+"urticaria and hives",Dermatology
+"asthma and difficulty breathing",Pulmonology
+"tremors and muscle weakness",Neurology
+"constipation and abdominal pain",Gastroenterology
+"arthritis and joint swelling",Orthopedics
+"tonsillitis and sore throat",ENT
+"gingivitis and tooth decay",Dentistry
+"rosacea and facial redness",Dermatology
+"insomnia and memory issues",Neurology
+"high blood pressure and chest pain",Cardiology
+"itching and skin peeling",Dermatology
+"emphysema and chronic cough",Pulmonology
+"vision loss and eye pain",Neurology
+"ulcers and stomach discomfort",Gastroenterology
+"hip pain and stiffness",Orthopedics
+"ear infection and fever",ENT
+"tooth fracture and sensitivity",Dentistry
+"warts and skin growths",Dermatology
+"balance problems and nausea",Neurology
+"atrial fibrillation and fatigue",Cardiology
+"allergic dermatitis and swelling",Dermatology
+"lung infection and chest pain",Pulmonology
+"neuropathy and burning sensation",Neurology
+"irritable bowel and bloating",Gastroenterology
+"ankle sprain and swelling",Orthopedics
+"chronic sinusitis and headache",ENT
+"periodontitis and loose teeth",Dentistry
+"melanoma and skin changes",Dermatology
+"epilepsy and seizures",Neurology
+"heart palpitations and dizziness",Cardiology
+"lichen planus and oral sores",Dermatology
+"pleurisy and sharp chest pain",Pulmonology
+"chronic migraines and nausea",Neurology
+"gastritis and burning pain",Gastroenterology
+"tendinitis and joint pain",Orthopedics
+"vertigo and ear pressure",ENT
+"tooth erosion and sensitivity",Dentistry
+"impetigo and crusty sores",Dermatology
+"transient ischemic attack and confusion",Neurology
+"coronary artery disease and angina",Cardiology
+"folliculitis and skin bumps",Dermatology
+"tuberculosis and night sweats",Pulmonology
+"parkinson's and tremors",Neurology
+"crohn's disease and diarrhea",Gastroenterology
+"fractured bone and swelling",Orthopedics
+"laryngitis and hoarseness",ENT
+"oral thrush and white patches",Dentistry
+"shingles and painful rash",Dermatology
+"stroke and speech difficulty",Neurology
+"heart failure and swelling",Cardiology
+"vitiligo and skin discoloration",Dermatology
+"pneumonia and fever",Pulmonology
+"brain fog and concentration issues",Neurology
+"colitis and abdominal pain",Gastroenterology
+"scoliosis and back pain",Orthopedics
+"otitis media and ear pain",ENT
+"dental caries and tooth pain",Dentistry
+"athlete's foot and itching",Dermatology
+"fainting and low energy",Neurology
+"chest pain and high cholesterol",Cardiology
+"seborrheic dermatitis and dandruff",Dermatology
+"copd and wheezing",Pulmonology
+"cluster headaches and eye pain",Neurology
+"food poisoning and vomiting",Gastroenterology
+"rheumatoid arthritis and fatigue",Orthopedics
+"nasal polyps and congestion",ENT
+"tooth infection and swelling",Dentistry
+"eczema and skin cracking",Dermatology
+"concussion and headache",Neurology
+"heart murmur and fatigue",Cardiology
+"hives and allergic reaction",Dermatology
+"sleep apnea and snoring",Pulmonology
+"multiple sclerosis and weakness",Neurology
+"pancreatitis and severe pain",Gastroenterology
+"osteoporosis and bone pain",Orthopedics
+"earwax buildup and hearing loss",ENT
+"dry mouth and tooth decay",Dentistry
+"scabies and intense itching",Dermatology
+"chronic fatigue and dizziness",Neurology
+"hypertension and headaches",Cardiology
+"sunburn and skin peeling",Dermatology
+"lung fibrosis and shortness of breath",Pulmonology
+"brain tumor and seizures",Neurology
+"appendicitis and sharp pain",Gastroenterology
+"dislocated shoulder and pain",Orthopedics
+"allergic rhinitis and sneezing",ENT
+"cracked tooth and sensitivity",Dentistry
+"herpes zoster and blisters",Dermatology
+"neuralgia and nerve pain",Neurology
+"arrhythmia and chest pain",Cardiology
+"skin tags and irritation",Dermatology
+"bronchial asthma and wheezing",Pulmonology
+"alzheimer's and memory loss",Neurology
+"diverticulitis and abdominal pain",Gastroenterology
+"carpal tunnel and wrist pain",Orthopedics
+"chronic ear infection and discharge",ENT
+"tooth discoloration and pain",Dentistry
+"moles and skin changes",Dermatology
+"paralysis and muscle weakness",Neurology
+"heart valve issues and fatigue",Cardiology
+"contact allergy and redness",Dermatology
+"chronic bronchitis and cough",Pulmonology
+"neuralgia and facial pain",Neurology
+"acid reflux and chest pain",Gastroenterology
+"sprained ankle and swelling",Orthopedics
+"throat infection and swelling",ENT
+"gum recession and sensitivity",Dentistry
+"basal cell carcinoma and sores",Dermatology
+"meningitis and stiff neck",Neurology
+"chest pain and anxiety",Cardiology
+"pruritus and skin irritation",Dermatology
+"pulmonary edema and breathlessness",Pulmonology
+"trigeminal neuralgia and pain",Neurology
+"peptic ulcer and stomach pain",Gastroenterology
+"muscle strain and soreness",Orthopedics
+"vocal cord issues and hoarseness",ENT
+"tooth trauma and bleeding",Dentistry
+"keratosis and rough skin",Dermatology
+"chronic dizziness and nausea",Neurology
+"atherosclerosis and chest pain",Cardiology
+"skin burns and blisters",Dermatology
+"lung cancer and chest pain",Pulmonology
+"hydrocephalus and headaches",Neurology
+"hepatitis and nausea",Gastroenterology
+"bone spur and joint pain",Orthopedics
+"swimmer's ear and pain",ENT
+"oral cancer and sores",Dentistry
+"allergic skin reaction and rash",Dermatology
+"peripheral neuropathy and numbness",Neurology
+"mitral valve prolapse and palpitations",Cardiology
+"chilblains and skin swelling",Dermatology
+"pleural effusion and chest pain",Pulmonology
+"glioma and vision issues",Neurology
+"gallstones and abdominal pain",Gastroenterology
+"bursitis and joint pain",Orthopedics
+"nasal obstruction and snoring",ENT
+"tooth abscess and fever",Dentistry
+"skin ulcers and pain",Dermatology
+"chronic headaches and fatigue",Neurology

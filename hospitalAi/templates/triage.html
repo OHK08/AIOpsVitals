@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triage Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-blue-600 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <a class="flex items-center text-white text-xl font-bold" href="/">
+        <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="mr-2" alt="OpsVitals Logo">
+        OpsVitals
+      </a>
+      <button id="navbarToggle" class="text-white md:hidden focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+      <div id="navbarMenu" class="hidden md:flex md:items-center space-x-4">
+        <a class="text-white hover:text-gray-200 transition" href="/form">Predict Wait Time</a>
+        <a class="text-white hover:text-gray-200 transition" href="/triage">Triage Assistant</a>
+        <a class="text-white hover:text-gray-200 transition" href="/doctor_chat">Doctor Chatbot</a>
+        <a class="text-white hover:text-gray-200 transition" href="/management_chat">Management Chatbot</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex items-center justify-center py-8">
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">🩺 Triage Assistant</h1>
+      <p class="text-gray-600 mb-6 text-center">Enter your symptoms below to find the most suitable department.</p>
+
+      <!-- Input -->
+      <textarea id="symptomInput" rows="3"
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="e.g. chest pain, shortness of breath"></textarea>
+
+      <!-- Button -->
+      <button onclick="getTriagePrediction()"
+        class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+        Predict Department
+      </button>
+
+      <!-- Result -->
+<div id="result" class="mt-6 text-center hidden">
+  <h2 class="text-lg font-semibold text-gray-700">Prediction Results:</h2>
+
+  <p class="mt-2"><strong>Department:</strong>
+    <span id="departmentOutput" class="text-xl font-bold text-blue-600"></span>
+  </p>
+
+  <p class="mt-2"><strong>Suggested Tests:</strong></p>
+  <ul id="testsOutput" class="list-disc list-inside text-gray-700"></ul>
+</div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-blue-600 text-white text-center py-4">
+    <p>&copy; 2025 OpsVitals. All rights reserved.</p>
+    <p>Contact: support@opsvitals.com | Powered by AI</p>
+  </footer>
+<script>
+  async function getTriagePrediction() {
+  const symptom = document.getElementById("symptomInput").value.trim();
+  const resultDiv = document.getElementById("result");
+  const departmentOutput = document.getElementById("departmentOutput");
+  const testsOutput = document.getElementById("testsOutput");
+
+  if (!symptom) {
+    alert("⚠️ Please enter a symptom.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/predict_triage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ symptom })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      departmentOutput.innerText = "❌ " + data.error;
+      testsOutput.innerHTML = "";
+      departmentOutput.classList.replace("text-blue-600", "text-red-600");
+    } else {
+      // Display department
+      const dept = data.department;
+      departmentOutput.innerText = dept;
+      departmentOutput.classList.replace("text-red-600", "text-blue-600");
+
+      // Frontend-only mapping for suggested tests
+      const testsMap = {
+        "Cardiology": ["ECG", "Blood Pressure", "Echocardiogram"],
+        "Neurology": ["MRI", "EEG", "CT Scan"],
+        "Gastroenterology": ["Endoscopy", "Ultrasound", "Liver Function Test"],
+        "Dermatology": ["Skin Biopsy", "Allergy Test"],
+        "Pulmonology": ["X-Ray", "Pulmonary Function Test", "Spirometry"],
+        "Orthopedics": ["X-Ray", "MRI", "CT Scan"],
+        "ENT": ["Hearing Test", "Nasal Endoscopy"],
+        "Dentistry": ["Dental X-Ray", "Oral Exam"],
+        "General Medicine": ["Blood Test", "Physical Exam"]
+      };
+
+      const suggestedTests = testsMap[dept] || ["General Checkup"];
+      testsOutput.innerHTML = "";
+      suggestedTests.forEach(test => {
+        const li = document.createElement("li");
+        li.textContent = test;
+        testsOutput.appendChild(li);
+      });
+    }
+
+    resultDiv.classList.remove("hidden");
+  } catch (err) {
+    departmentOutput.innerText = "⚠️ Server error: " + err.message;
+    testsOutput.innerHTML = "";
+    departmentOutput.classList.replace("text-blue-600", "text-red-600");
+    resultDiv.classList.remove("hidden");
+  }
+}
+</script>
+</body>
+</html>
