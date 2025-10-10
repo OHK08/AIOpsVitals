@@ -36,10 +36,34 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link text-white" href="/form">Predict Wait Time</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/triage">Triage Assistant</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/doctor_chat">Doctor Chatbot</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/management_chat">Management Chatbot</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="patientDropdown" role="button" data-bs-toggle="dropdown">
+            Patient
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="patientDropdown">
+            <li><a class="dropdown-item" href="/health_summary">Health Summary</a></li>
+            <li><a class="dropdown-item" href="/form">Predict Wait Time</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown">
+            Doctor
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+            <li><a class="dropdown-item" href="/patient_details">Patient Details</a></li>
+            <li><a class="dropdown-item" href="/medicine_lookup">Medicine Lookup</a></li>
+            <li><a class="dropdown-item" href="/doctor_chat">Doctor Chatbot</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+            <li><a class="dropdown-item" href="/triage">Triage Assistant</a></li>
+            <li><a class="dropdown-item" href="/management_chat">Management Chatbot</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
@@ -48,9 +72,8 @@
 <!-- Hero Section -->
 <section class="hero-bg">
   <div class="container fade-in">
-    <h1 class="display-4 fw-bold mb-3">Streamline Hospital Operations</h1>
-    <p class="lead mb-4">AI-powered wait time predictions and actionable insights for doctors and management.</p>
-    <a href="/form" class="btn btn-warning btn-lg">Predict Wait Time</a>
+    <h1 class="display-4 fw-bold mb-3">OpsVitals</h1>
+    <p class="lead fw-bold mb-4">AI-powered predictions and actionable insights for patients, doctors, and management.</p>
   </div>
 </section>
 
@@ -59,33 +82,55 @@
   <div class="container text-center">
     <h2 class="mb-5 text-primary fw-bold fade-in">Our Features</h2>
     <div class="row g-4">
+
+      <!-- Patient Card -->
       <div class="col-md-4">
         <div class="card shadow feature-card p-3">
           <img src="https://img.freepik.com/free-vector/patients-doctors-waiting-room-patient-doctor-patient-hospital-office-interior-clinic-waiting-patient-illustration_1284-53576.jpg" class="card-img-top rounded" alt="Patient Prediction">
-          <div class="card-body">
-            <h5 class="card-title text-primary">Patient Wait Time Prediction</h5>
-            <p class="card-text">Predict wait times accurately using AI to optimize patient flow and resource allocation.</p>
+          <div class="card-body text-start">
+            <h5 class="card-title text-primary">Patient Care</h5>
+            <ul>
+              <li>Predict wait times accurately to optimize patient flow.</li>
+              <li>Receive personalized suggestions for urgency and tests.</li>
+              <li>Access health summaries generated from uploaded reports.</li>
+              <li>Reduce waiting and improve overall patient experience.</li>
+            </ul>
           </div>
         </div>
       </div>
+
+      <!-- Doctor Card -->
       <div class="col-md-4">
         <div class="card shadow feature-card p-3">
           <img src="https://t4.ftcdn.net/jpg/02/74/73/01/360_F_274730119_ht4FXz4R6RnIJgPk7WeNALxxaf524Jrb.jpg" class="card-img-top rounded" alt="Doctor Chatbot">
-          <div class="card-body">
-            <h5 class="card-title text-primary">Doctor Chatbot</h5>
-            <p class="card-text">Get actionable patient care advice with detailed context for better decision-making.</p>
+          <div class="card-body text-start">
+            <h5 class="card-title text-primary">Doctor Assistant</h5>
+            <ul>
+              <li>Get actionable patient care advice via AI chatbot.</li>
+              <li>Access medicine lookup to check brands, dosage, and indications.</li>
+              <li>View patient details and summaries for informed decisions.</li>
+              <li>Receive suggestions on tests based on symptoms using triage assistant.</li>
+            </ul>
           </div>
         </div>
       </div>
+
+      <!-- Management Card -->
       <div class="col-md-4">
         <div class="card shadow feature-card p-3">
           <img src="https://media.istockphoto.com/id/979040452/vector/treatment-and-clinic-assistance.jpg?s=612x612&w=0&k=20&c=tUQqfJakq5tMLbJwgJh3X52QbAI20GrRwhK1HuMJTPY=" class="card-img-top rounded" alt="Management Chatbot">
-          <div class="card-body">
-            <h5 class="card-title text-primary">Management Chatbot</h5>
-            <p class="card-text">Optimize operations using Six Sigma/DMAIC insights to reduce bottlenecks and wait times.</p>
+          <div class="card-body text-start">
+            <h5 class="card-title text-primary">Management Optimization</h5>
+            <ul>
+              <li>Monitor hospital workflow and bottlenecks using AI predictions.</li>
+              <li>Optimize resource allocation and staff schedules.</li>
+              <li>Receive instant triage suggestions for efficient patient handling.</li>
+              <li>Communicate with management chatbot for DMAIC-based solutions.</li>
+            </ul>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>

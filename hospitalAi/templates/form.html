@@ -87,25 +87,49 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="d-inline-block align-top me-2">
-        OpsVitals
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link text-white" href="/form">Predict Wait Time</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="/triage">Triage Assistant</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="/doctor_chat">Doctor Chatbot</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="/management_chat">Management Chatbot</a></li>
-        </ul>
-      </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="d-inline-block align-top me-2">
+      OpsVitals
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="patientDropdown" role="button" data-bs-toggle="dropdown">
+            Patient
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="patientDropdown">
+            <li><a class="dropdown-item" href="/health_summary">Health Summary</a></li>
+            <li><a class="dropdown-item" href="/form">Predict Wait Time</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown">
+            Doctor
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+            <li><a class="dropdown-item" href="/patient_details">Patient Details</a></li>
+            <li><a class="dropdown-item" href="/medicine_lookup">Medicine Lookup</a></li>
+            <li><a class="dropdown-item" href="/doctor_chat">Doctor Chatbot</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+            <li><a class="dropdown-item" href="/triage">Triage Assistant</a></li>
+            <li><a class="dropdown-item" href="/management_chat">Management Chatbot</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <!-- Form -->
   <div class="container my-5">

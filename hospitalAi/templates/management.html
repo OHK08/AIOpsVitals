@@ -4,14 +4,178 @@
   <meta charset="UTF-8">
   <title>Management Chatbot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <style>
-    .chat-box { max-height: 500px; overflow-y: auto; background:#f8f9fa; padding:1rem; border-radius:0.5rem;}
-    .user-message { text-align:right; margin-bottom:0.5rem;}
-    .bot-message { text-align:left; margin-bottom:0.5rem;}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e6f0ff, #d0e1ff);
+      color: #1a2a44;
+      margin: 0;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 50vh;
+      background: url('https://images.unsplash.com/photo-1505751172876-fa1923c5c7a2') no-repeat center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-overlay {
+      background: rgba(0, 123, 255, 0.5);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-content {
+      z-index: 1;
+      text-align: center;
+      animation: slideInFromTop 1s ease-in-out;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      border-radius: 25px;
+      padding: 10px 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-outline-dark {
+      border-radius: 25px;
+      font-weight: 500;
+      border-color: #343a40;
+      color: #343a40;
+    }
+
+    .btn-outline-dark:hover {
+      background-color: #343a40;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .chat-container {
+      max-width: 900px;
+      margin: 30px auto;
+    }
+
+    .chat-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 15px;
+      max-height: 500px;
+      overflow-y: auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-message {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      max-width: 70%;
+    }
+
+    .user-message {
+      background: #28a745;
+      color: #fff;
+      align-self: flex-end;
+      margin-left: auto;
+      animation: fadeIn 0.5s ease-in;
+      text-align: right;
+    }
+
+    .bot-message {
+      background: #007bff;
+      color: #fff;
+      align-self: flex-start;
+      animation: fadeIn 0.5s ease-in;
+      text-align: left;
+    }
+
+    .typing {
+      background: #e0e0e0;
+      color: #333;
+      font-style: italic;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #dee2e6;
+      padding: 10px;
+      background: #fff;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .chat-input input {
+      border-radius: 25px;
+      padding: 12px;
+      flex: 1;
+      border: 1px solid #007bff;
+      transition: border-color 0.3s ease;
+    }
+
+    .chat-input input:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+      outline: none;
+    }
+
+    .chat-input button {
+      border-radius: 25px;
+      padding: 10px 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .chat-input button:hover {
+      transform: scale(1.05);
+    }
+
+    .character-img {
+      width: 40px;
+      height: 40px;
+      animation: bounce 2s infinite;
+    }
+
+    footer {
+      background: #ADD8E6;
+      color: black;
+      padding: 1rem 0;
+      text-align: center;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes slideInFromTop {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
   </style>
 </head>
 <body class="bg-light">
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
   <div class="container">
@@ -24,61 +188,91 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-       <li class="nav-item"><a class="nav-link text-white" href="/form">Predict Wait Time</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/triage">Triage Assistant</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/doctor_chat">Doctor Chatbot</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="/management_chat">Management Chatbot</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="patientDropdown" role="button" data-bs-toggle="dropdown">
+            Patient
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="patientDropdown">
+            <li><a class="dropdown-item" href="/health_summary">Health Summary</a></li>
+            <li><a class="dropdown-item" href="/form">Predict Wait Time</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown">
+            Doctor
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+            <li><a class="dropdown-item" href="/patient_details">Patient Details</a></li>
+            <li><a class="dropdown-item" href="/medicine_lookup">Medicine Lookup</a></li>
+            <li><a class="dropdown-item" href="/doctor_chat">Doctor Chatbot</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+            <li><a class="dropdown-item" href="/triage">Triage Assistant</a></li>
+            <li><a class="dropdown-item" href="/management_chat">Management Chatbot</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-  <div class="container py-4">
-    <h2>Management Chatbot</h2>
-    <div id="chat-box" class="chat-box mb-3">
-      <div class="bot-message chat-message">
-        👋 Hello! I am your AI assistant.
-        {% if form_data %}
-          <br>Patient Context:
-          <ul>
-            {% for k,v in form_data.items() %}
-              <li><strong>{{k}}:</strong> {{v}}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
-    </div>
-    <div class="d-flex mb-3">
-      <input type="text" id="user-input" class="form-control me-2" placeholder="Type your message..." onkeydown="if(event.key==='Enter'){sendMessage();}">
-      <button class="btn btn-primary me-2" onclick="sendMessage()">Send</button>
+
+<div class="container py-4">
+  <h2>Management Chatbot</h2>
+  <div id="chat-box" class="chat-box mb-3">
+    <div class="bot-message chat-message">
+      👋 Hello! I am your AI assistant.
+      {% if form_data %}
+        <br>Patient Context:
+        <ul>
+          {% for k,v in form_data.items() %}
+            <li><strong>{{k}}:</strong> {{v}}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
   </div>
+  <div class="d-flex mb-3 chat-input">
+    <input type="text" id="user-input" class="form-control me-2" placeholder="Type your message..." onkeydown="if(event.key==='Enter'){sendMessage();}">
+    <button class="btn btn-primary me-2" onclick="sendMessage()">Send</button>
+  </div>
+</div>
 
 <script>
-async function sendMessage(){
+async function sendMessage() {
   const input = document.getElementById("user-input");
   const msg = input.value.trim();
-  if(!msg) return;
+  if (!msg) return;
   const chatBox = document.getElementById("chat-box");
   chatBox.innerHTML += `<div class="user-message chat-message">${msg}</div>`;
   input.value = "";
   chatBox.scrollTop = chatBox.scrollHeight;
 
   const role = "Management";
+  console.log("Sending:", { message: msg, role: role });  // Debugging: Log sent message and role
 
   const resp = await fetch("/get_response", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({message:msg, role:role})
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: msg, role: role })
   });
   const data = await resp.json();
+  console.log("Response data:", data);  // Debugging: Log response data
   chatBox.innerHTML += `<div class="bot-message chat-message">${data.formatted}</div>`;
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
+
 <!-- Footer -->
 <footer class="bg-primary text-white text-center py-4">
   <p>&copy; 2025 OpsVitals. All rights reserved.</p>
   <p>Contact: support@opsvitals.com | Powered by AI</p>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

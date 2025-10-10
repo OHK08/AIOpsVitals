@@ -4,126 +4,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Triage Prediction</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <style>
+    /* Fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Card hover effect */
+    .feature-card:hover {
+      transform: translateY(-5px);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    /* Dropdown menu adjustments */
+    .dropdown-menu {
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
-  <!-- Navbar -->
-  <nav class="bg-blue-600 shadow-lg">
-    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-      <a class="flex items-center text-white text-xl font-bold" href="/">
-        <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="mr-2" alt="OpsVitals Logo">
-        OpsVitals
-      </a>
-      <button id="navbarToggle" class="text-white md:hidden focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-        </svg>
-      </button>
-      <div id="navbarMenu" class="hidden md:flex md:items-center space-x-4">
-        <a class="text-white hover:text-gray-200 transition" href="/form">Predict Wait Time</a>
-        <a class="text-white hover:text-gray-200 transition" href="/triage">Triage Assistant</a>
-        <a class="text-white hover:text-gray-200 transition" href="/doctor_chat">Doctor Chatbot</a>
-        <a class="text-white hover:text-gray-200 transition" href="/management_chat">Management Chatbot</a>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" width="40" height="40" class="d-inline-block align-top me-2">
+      OpsVitals
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="patientDropdown" role="button" data-bs-toggle="dropdown">
+            Patient
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="patientDropdown">
+            <li><a class="dropdown-item" href="/health_summary">Health Summary</a></li>
+            <li><a class="dropdown-item" href="/form">Predict Wait Time</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown">
+            Doctor
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+            <li><a class="dropdown-item" href="/patient_details">Patient Details</a></li>
+            <li><a class="dropdown-item" href="/medicine_lookup">Medicine Lookup</a></li>
+            <li><a class="dropdown-item" href="/doctor_chat">Doctor Chatbot</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+            <li><a class="dropdown-item" href="/triage">Triage Assistant</a></li>
+            <li><a class="dropdown-item" href="/management_chat">Management Chatbot</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero / Input Section -->
+<main class="flex-grow-1">
+  <section class="position-relative bg-light text-dark py-5">
+    <div class="container py-5">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold mb-4">🩺 Triage Assistant</h1>
+          <p class="lead mb-4">
+            Enter your symptoms below to find the most suitable department.
+          </p>
+          <!-- Input Card -->
+          <div class="card shadow-lg p-4 mt-4 mx-auto fade-in feature-card" style="max-width: 500px;">
+            <div class="card-body">
+              <textarea id="symptomInput" rows="3" class="form-control mb-3" placeholder="e.g. chest pain, shortness of breath"></textarea>
+              <button onclick="getTriagePrediction()" class="btn btn-primary w-100">Predict Department</button>
+              <!-- Result -->
+              <div id="result" class="mt-4 text-center d-none">
+                <h2 class="h5 fw-bold text-dark">Prediction Results:</h2>
+                <p class="mt-2"><strong>Department:</strong> <span id="departmentOutput" class="text-primary fw-bold"></span></p>
+                <p class="mt-2"><strong>Urgency:</strong> <span id="urgencyOutput" class="text-primary fw-bold"></span></p>
+                <p class="mt-2"><strong>Suggested Tests:</strong></p>
+                <ul id="testsOutput" class="list-group list-group-flush text-dark"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </nav>
+  </section>
+</main>
 
-  <!-- Main Content -->
-  <main class="flex-grow flex items-center justify-center py-8">
-    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-      <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">🩺 Triage Assistant</h1>
-      <p class="text-gray-600 mb-6 text-center">Enter your symptoms below to find the most suitable department.</p>
+<!-- Footer -->
+<footer class="bg-primary text-white text-center py-4 mt-auto">
+  <p>&copy; 2025 OpsVitals. All rights reserved.</p>
+  <p>Contact: support@opsvitals.com | Powered by AI</p>
+</footer>
 
-      <!-- Input -->
-      <textarea id="symptomInput" rows="3"
-        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-        placeholder="e.g. chest pain, shortness of breath"></textarea>
-
-      <!-- Button -->
-      <button onclick="getTriagePrediction()"
-        class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-        Predict Department
-      </button>
-
-      <!-- Result -->
-<div id="result" class="mt-6 text-center hidden">
-  <h2 class="text-lg font-semibold text-gray-700">Prediction Results:</h2>
-
-  <p class="mt-2"><strong>Department:</strong>
-    <span id="departmentOutput" class="text-xl font-bold text-blue-600"></span>
-  </p>
-
-  <p class="mt-2"><strong>Suggested Tests:</strong></p>
-  <ul id="testsOutput" class="list-disc list-inside text-gray-700"></ul>
-</div>
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-blue-600 text-white text-center py-4">
-    <p>&copy; 2025 OpsVitals. All rights reserved.</p>
-    <p>Contact: support@opsvitals.com | Powered by AI</p>
-  </footer>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Triage prediction fetch
   async function getTriagePrediction() {
-  const symptom = document.getElementById("symptomInput").value.trim();
-  const resultDiv = document.getElementById("result");
-  const departmentOutput = document.getElementById("departmentOutput");
-  const testsOutput = document.getElementById("testsOutput");
+    const symptom = document.getElementById("symptomInput").value.trim();
+    const resultDiv = document.getElementById("result");
+    const departmentOutput = document.getElementById("departmentOutput");
+    const urgencyOutput = document.getElementById("urgencyOutput");
+    const testsOutput = document.getElementById("testsOutput");
 
-  if (!symptom) {
-    alert("⚠️ Please enter a symptom.");
-    return;
-  }
-
-  try {
-    const response = await fetch("/predict_triage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ symptom })
-    });
-
-    const data = await response.json();
-
-    if (data.error) {
-      departmentOutput.innerText = "❌ " + data.error;
-      testsOutput.innerHTML = "";
-      departmentOutput.classList.replace("text-blue-600", "text-red-600");
-    } else {
-      // Display department
-      const dept = data.department;
-      departmentOutput.innerText = dept;
-      departmentOutput.classList.replace("text-red-600", "text-blue-600");
-
-      // Frontend-only mapping for suggested tests
-      const testsMap = {
-        "Cardiology": ["ECG", "Blood Pressure", "Echocardiogram"],
-        "Neurology": ["MRI", "EEG", "CT Scan"],
-        "Gastroenterology": ["Endoscopy", "Ultrasound", "Liver Function Test"],
-        "Dermatology": ["Skin Biopsy", "Allergy Test"],
-        "Pulmonology": ["X-Ray", "Pulmonary Function Test", "Spirometry"],
-        "Orthopedics": ["X-Ray", "MRI", "CT Scan"],
-        "ENT": ["Hearing Test", "Nasal Endoscopy"],
-        "Dentistry": ["Dental X-Ray", "Oral Exam"],
-        "General Medicine": ["Blood Test", "Physical Exam"]
-      };
-
-      const suggestedTests = testsMap[dept] || ["General Checkup"];
-      testsOutput.innerHTML = "";
-      suggestedTests.forEach(test => {
-        const li = document.createElement("li");
-        li.textContent = test;
-        testsOutput.appendChild(li);
-      });
+    if (!symptom) {
+      alert("⚠️ Please enter a symptom.");
+      return;
     }
 
-    resultDiv.classList.remove("hidden");
-  } catch (err) {
-    departmentOutput.innerText = "⚠️ Server error: " + err.message;
-    testsOutput.innerHTML = "";
-    departmentOutput.classList.replace("text-blue-600", "text-red-600");
-    resultDiv.classList.remove("hidden");
+    try {
+      const response = await fetch("/predict_triage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptom })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        departmentOutput.innerText = "❌ " + data.error;
+        urgencyOutput.innerText = "";
+        testsOutput.innerHTML = "";
+        departmentOutput.classList.replace("text-primary", "text-danger");
+        urgencyOutput.classList.replace("text-primary", "text-danger");
+      } else {
+        departmentOutput.innerText = data.department;
+        urgencyOutput.innerText = data.urgency || "Not specified";
+        departmentOutput.classList.replace("text-danger", "text-primary");
+        urgencyOutput.classList.replace("text-danger", "text-primary");
+
+        const suggestedTests = data.suggested_tests || ["General Checkup"];
+        testsOutput.innerHTML = "";
+        suggestedTests.forEach(test => {
+          const li = document.createElement("li");
+          li.className = "list-group-item";
+          li.textContent = test;
+          testsOutput.appendChild(li);
+        });
+      }
+
+      resultDiv.classList.remove("d-none");
+    } catch (err) {
+      departmentOutput.innerText = "⚠️ Server error: " + err.message;
+      urgencyOutput.innerText = "";
+      testsOutput.innerHTML = "";
+      departmentOutput.classList.replace("text-primary", "text-danger");
+      urgencyOutput.classList.replace("text-primary", "text-danger");
+      resultDiv.classList.remove("d-none");
+    }
   }
-}
 </script>
+
 </body>
 </html>
