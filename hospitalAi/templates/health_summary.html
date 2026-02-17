@@ -10,59 +10,131 @@
   <style>
     .hero-bg {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 4rem 0;
-      text-align: center;
+      color: white; padding: 4rem 0; text-align: center;
     }
     .fade-in { animation: fadeIn 1s ease-in-out; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .feature-card:hover { transform: translateY(-5px); transition: 0.3s; }
-    .form-section { max-width: 700px; margin: 2rem auto; }
-    .summary-card { max-width: 900px; margin: 2rem auto; }
+    .feature-card { transition: 0.3s; }
+    .feature-card:hover { transform: translateY(-5px); }
+    .form-section  { max-width: 700px; margin: 2rem auto; }
+    .summary-card  { max-width: 960px; margin: 2rem auto; }
+
     .loader {
-      display: none;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 1rem auto;
+      display: none; border: 4px solid #f3f3f3; border-top: 4px solid #3498db;
+      border-radius: 50%; width: 40px; height: 40px;
+      animation: spin 1s linear infinite; margin: 1rem auto;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+
+    /* ── Summary sections ── */
     .summary-section {
-      background-color: #f8f9fa;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      border-left: 4px solid #0d6efd;
+      background-color: #f8f9fa; padding: 1.25rem; border-radius: 8px;
+      margin-bottom: 1.25rem; border-left: 4px solid #0d6efd;
     }
     .summary-section h4 {
-      color: #0d6efd;
-      border-bottom: 2px solid #0d6efd;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      color: #0d6efd; border-bottom: 2px solid #0d6efd;
+      padding-bottom: 0.4rem; margin-bottom: 0.9rem; font-size: 1rem;
     }
-    .summary-section ul { list-style-type: none; padding-left: 0; }
-    .summary-section ul li { margin-bottom: 0.75rem; padding: 0.5rem; background: white; border-radius: 4px; }
-    .summary-section ul li i { margin-right: 0.75rem; color: #0d6efd; }
-    .badge-risk-critical { background-color: #dc3545; }
-    .badge-risk-high { background-color: #fd7e14; }
-    .badge-risk-moderate { background-color: #ffc107; }
-    .badge-risk-low { background-color: #28a745; }
-    .badge-urgency-immediate { background-color: #dc3545; }
-    .badge-urgency-urgent { background-color: #fd7e14; }
-    .badge-urgency-soon { background-color: #ffc107; }
-    .badge-urgency-routine { background-color: #6c757d; }
-    .abnormal-value { background-color: #fff3cd; border-left: 3px solid #ffc107; padding: 0.5rem; margin: 0.5rem 0; }
-    .abnormal-value.critical { background-color: #f8d7da; border-left-color: #dc3545; }
-    .abnormal-value.high { background-color: #fff3cd; border-left-color: #fd7e14; }
-    .abnormal-value.low { background-color: #cff4fc; border-left-color: #0dcaf0; }
-    .summary-content { font-size: 1rem; line-height: 1.6; }
-    .alert { max-width: 700px; margin: 0 auto; }
+    .summary-section ul { list-style: none; padding-left: 0; margin: 0; }
+    .summary-section ul li {
+      margin-bottom: 0.6rem; padding: 0.45rem 0.6rem;
+      background: white; border-radius: 4px; font-size: 0.92rem;
+    }
+    .summary-section ul li i { margin-right: 0.6rem; color: #0d6efd; }
+
+    /* ── Badges ── */
+    .badge-risk-critical { background-color: #dc3545 !important; }
+    .badge-risk-high     { background-color: #fd7e14 !important; }
+    .badge-risk-moderate { background-color: #ffc107 !important; color: #000 !important; }
+    .badge-risk-low      { background-color: #28a745 !important; }
+    .badge-urg-immediate { background-color: #dc3545 !important; }
+    .badge-urg-urgent    { background-color: #fd7e14 !important; }
+    .badge-urg-soon      { background-color: #ffc107 !important; color: #000 !important; }
+    .badge-urg-routine   { background-color: #6c757d !important; }
+
+    /* ── Abnormal values ── */
+    .abnormal-value {
+      border-left: 3px solid #ffc107; padding: 0.45rem 0.6rem;
+      margin: 0.4rem 0; border-radius: 4px; background: #fff3cd; font-size: 0.9rem;
+    }
+    .abnormal-value.critical { background: #f8d7da; border-left-color: #dc3545; }
+    .abnormal-value.high     { background: #fff3cd; border-left-color: #fd7e14; }
+    .abnormal-value.low      { background: #cff4fc; border-left-color: #0dcaf0; }
+
+    /* ══════════════════════════════════════════
+       SPLIT MODAL
+       Left  = summary   |   Right = PDF viewer
+       ══════════════════════════════════════════ */
+    #reportModal .modal-dialog {
+      max-width: 96vw;
+      width: 96vw;
+      margin: 1.5rem auto;
+    }
+    #reportModal .modal-content {
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #reportModal .modal-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    /* Left panel */
+    .panel-summary {
+      width: 48%;
+      overflow-y: auto;
+      padding: 1.25rem 1.5rem;
+      border-right: 2px solid #dee2e6;
+    }
+
+    /* Right panel */
+    .panel-pdf {
+      width: 52%;
+      display: flex;
+      flex-direction: column;
+      background: #525659;
+    }
+    .panel-pdf-header {
+      background: #343a40;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    #pdfViewerContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #pdfViewerContainer iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    .pdf-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    @media (max-width: 767px) {
+      #reportModal .modal-dialog { max-width: 100vw; width: 100vw; margin: 0; }
+      #reportModal .modal-body   { flex-direction: column; overflow-y: auto; }
+      .panel-summary, .panel-pdf { width: 100%; border-right: none; }
+      #reportModal .modal-content { height: auto; }
+      #pdfViewerContainer iframe  { height: 70vw; }
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -80,29 +152,23 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" id="patientDropdown" role="button" data-bs-toggle="dropdown">
-            Patient
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="patientDropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">Patient</a>
+          <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/health_summary">Health Summary</a></li>
             <li><a class="dropdown-item" href="/form">Predict Wait Time</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown">
-            Doctor
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">Doctor</a>
+          <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/patient_details">Patient Details</a></li>
             <li><a class="dropdown-item" href="/medicine_lookup">Medicine Lookup</a></li>
             <li><a class="dropdown-item" href="/doctor_chat">Doctor Chatbot</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
-            Management
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">Management</a>
+          <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/triage">Triage Assistant</a></li>
             <li><a class="dropdown-item" href="/management_chat">Management Chatbot</a></li>
           </ul>
@@ -112,7 +178,7 @@
   </div>
 </nav>
 
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="hero-bg">
   <div class="container">
     <h1 class="display-4 fw-bold mb-3">Medical Report Analysis</h1>
@@ -120,7 +186,7 @@
   </div>
 </section>
 
-<!-- Form Section -->
+<!-- Upload Form -->
 <section class="form-section">
   <div class="container">
     <div class="card shadow p-4 feature-card">
@@ -128,16 +194,16 @@
       <form id="healthReportForm">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="patientName" class="form-label"><i class="fas fa-user"></i> Patient Name *</label>
-            <input type="text" class="form-control" id="patientName" name="patient_name" required>
+            <label class="form-label"><i class="fas fa-user"></i> Patient Name *</label>
+            <input type="text" class="form-control" name="patient_name" required>
           </div>
           <div class="col-md-3 mb-3">
-            <label for="patientAge" class="form-label"><i class="fas fa-birthday-cake"></i> Age *</label>
-            <input type="number" class="form-control" id="patientAge" name="patient_age" min="0" max="150" required>
+            <label class="form-label"><i class="fas fa-birthday-cake"></i> Age *</label>
+            <input type="number" class="form-control" name="patient_age" min="0" max="150" required>
           </div>
           <div class="col-md-3 mb-3">
-            <label for="patientGender" class="form-label"><i class="fas fa-venus-mars"></i> Gender *</label>
-            <select class="form-select" id="patientGender" name="patient_gender" required>
+            <label class="form-label"><i class="fas fa-venus-mars"></i> Gender *</label>
+            <select class="form-select" name="patient_gender" required>
               <option value="">Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -146,11 +212,12 @@
           </div>
         </div>
         <div class="mb-3">
-          <label for="otherDetails" class="form-label"><i class="fas fa-notes-medical"></i> Medical History / Notes (Optional)</label>
-          <textarea class="form-control" id="otherDetails" name="other_details" rows="3" placeholder="Known conditions, allergies, current medications, etc."></textarea>
+          <label class="form-label"><i class="fas fa-notes-medical"></i> Medical History / Notes (Optional)</label>
+          <textarea class="form-control" name="other_details" rows="3"
+            placeholder="Known conditions, allergies, current medications, etc."></textarea>
         </div>
         <div class="mb-3">
-          <label for="healthReport" class="form-label"><i class="fas fa-file-pdf"></i> Health Report (PDF) *</label>
+          <label class="form-label"><i class="fas fa-file-pdf"></i> Health Report (PDF) *</label>
           <input type="file" class="form-control" id="healthReport" name="health_report" accept=".pdf" required>
           <div class="form-text">Upload medical report, lab results, or diagnostic imaging report in PDF format</div>
         </div>
@@ -158,22 +225,25 @@
           <i class="fas fa-brain"></i> Generate AI Summary
         </button>
         <div class="loader" id="formLoader"></div>
-        <div id="loadingText" class="text-center mt-2" style="display: none; color: #6c757d;">
-          <small>Analyzing report with AI... This may take 10-30 seconds</small>
+        <div id="loadingText" class="text-center mt-2" style="display:none; color:#6c757d;">
+          <small>Analyzing report with AI… This may take 10–30 seconds</small>
         </div>
       </form>
     </div>
   </div>
 </section>
 
-<!-- Summary Section -->
-<section class="summary-card" id="summarySection" style="display: none;">
+<!-- Inline Summary Card (shown after API responds) -->
+<section class="summary-card" id="summarySection" style="display:none;">
   <div class="container">
     <div class="card shadow p-4 feature-card">
-      <h3 class="text-center mb-4"><i class="fas fa-file-medical-alt"></i> Medical Summary</h3>
-      <div id="summaryContent" class="summary-content">
-        <!-- Summary will be injected here via JavaScript -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0"><i class="fas fa-file-medical-alt text-primary"></i> Medical Summary</h3>
+        <button class="btn btn-primary" onclick="openReportModal()">
+          <i class="fas fa-expand-alt"></i> View Report &amp; Summary
+        </button>
       </div>
+      <div id="summaryContent"></div>
     </div>
   </div>
 </section>
@@ -184,247 +254,310 @@
   <p>Contact: support@opsvitals.com | Powered by AI</p>
 </footer>
 
+<!-- ══════════════════════════════════════════════════
+     SPLIT MODAL
+     ══════════════════════════════════════════════════ -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header py-2 bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-file-medical-alt me-2"></i> Patient Report &amp; Summary
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- LEFT: AI summary -->
+        <div class="panel-summary" id="modalSummaryPanel"></div>
+
+        <!-- RIGHT: PDF viewer -->
+        <div class="panel-pdf">
+          <div class="panel-pdf-header">
+            <span><i class="fas fa-file-pdf me-2 text-danger"></i><span id="modalPdfName">Report</span></span>
+            <a id="modalPdfDownload" href="#" download
+               class="btn btn-sm btn-outline-light py-0 px-2">
+              <i class="fas fa-download"></i> Download
+            </a>
+          </div>
+          <div id="pdfViewerContainer"></div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer py-1">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Form submission handler
+  // ── Module-level state ─────────────────────────────────
+  let _result    = null;   // last successful API result
+  let _pdfUrl    = null;   // blob URL of the uploaded PDF
+  let _pdfName   = '';
+
+  // ── Form submit ────────────────────────────────────────
   document.getElementById('healthReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const form = e.target;
-    const loader = document.getElementById('formLoader');
-    const loadingText = document.getElementById('loadingText');
-    const submitButton = document.getElementById('submitBtn');
-    const summarySection = document.getElementById('summarySection');
-    const summaryContent = document.getElementById('summaryContent');
+    const loader        = document.getElementById('formLoader');
+    const loadingText   = document.getElementById('loadingText');
+    const submitBtn     = document.getElementById('submitBtn');
+    const summarySection= document.getElementById('summarySection');
+    const summaryContent= document.getElementById('summaryContent');
+    const fileInput     = document.getElementById('healthReport');
 
-    // Get form data
-    const formData = new FormData(form);
-    const patientName = formData.get('patient_name').trim();
-    const patientAge = formData.get('patient_age').trim();
-    const patientGender = formData.get('patient_gender');
-    const otherDetails = formData.get('other_details').trim();
-    const fileInput = document.getElementById('healthReport');
+    const formData = new FormData(e.target);
 
-    // Validate inputs
-    if (!patientName || !patientAge || !patientGender || !fileInput.files || !fileInput.files[0]) {
-      summaryContent.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-          <i class="fas fa-exclamation-circle"></i> Please fill all required fields (Name, Age, Gender) and upload a PDF file.
-        </div>
-      `;
-      summarySection.style.display = 'block';
-      summarySection.scrollIntoView({ behavior: 'smooth' });
+    // Validate
+    if (!formData.get('patient_name').trim() ||
+        !formData.get('patient_age').trim()  ||
+        !formData.get('patient_gender')      ||
+        !fileInput.files[0]) {
+      showAlert(summaryContent, summarySection,
+        'Please fill all required fields (Name, Age, Gender) and upload a PDF file.');
       return;
     }
-
     if (!fileInput.files[0].name.toLowerCase().endsWith('.pdf')) {
-      summaryContent.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-          <i class="fas fa-exclamation-circle"></i> Please upload a valid PDF file.
-        </div>
-      `;
-      summarySection.style.display = 'block';
-      summarySection.scrollIntoView({ behavior: 'smooth' });
+      showAlert(summaryContent, summarySection, 'Please upload a valid PDF file.');
       return;
     }
 
-    // Show loader
-    loader.style.display = 'block';
+    // Capture PDF as base64 BEFORE the form fetch consumes the file
+    const pdfFile   = fileInput.files[0];
+    _pdfName        = pdfFile.name;
+    const pdfBase64 = await fileToBase64(pdfFile);
+
+    // Revoke previous blob
+    if (_pdfUrl) { URL.revokeObjectURL(_pdfUrl); _pdfUrl = null; }
+
+    // UI — loading state
+    loader.style.display      = 'block';
     loadingText.style.display = 'block';
-    submitButton.disabled = true;
+    submitBtn.disabled        = true;
     summarySection.style.display = 'none';
 
     try {
-      // Call the API
-      const response = await fetch('/api/generate_summary', {
-        method: 'POST',
-        body: formData
-      });
-
-      const result = await response.json();
+      const response = await fetch('/api/generate_summary', { method: 'POST', body: formData });
+      const result   = await response.json();
 
       if (result.status === 'error') {
-        summaryContent.innerHTML = `
-          <div class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${result.error_message || 'Failed to process report'}
-          </div>
-        `;
-        summarySection.style.display = 'block';
-        summarySection.scrollIntoView({ behavior: 'smooth' });
+        showAlert(summaryContent, summarySection,
+          result.error_message || 'Failed to process report');
         return;
       }
 
-      // Save to localStorage
-      const patientRecord = {
+      // Build blob URL for PDF viewer
+      _pdfUrl  = URL.createObjectURL(base64ToBlob(pdfBase64, 'application/pdf'));
+      _result  = result;
+
+      // Persist to localStorage (include base64 so patient_details can show PDF too)
+      const record = {
         patient_info: result.patient_info,
-        summary: result.summary,
-        pdf_name: result.pdf_name,
-        timestamp: new Date().toISOString()
+        summary:      result.summary,
+        pdf_name:     result.pdf_name,
+        pdf_base64:   pdfBase64,
+        timestamp:    new Date().toISOString()
       };
+      const records = JSON.parse(localStorage.getItem('patientRecords') || '[]');
+      records.push(record);
+      localStorage.setItem('patientRecords', JSON.stringify(records));
 
-      let patientRecords = JSON.parse(localStorage.getItem('patientRecords') || '[]');
-      patientRecords.push(patientRecord);
-      localStorage.setItem('patientRecords', JSON.stringify(patientRecords));
-
-      // Display summary
-      displaySummary(result);
+      // Render inline summary
+      summaryContent.innerHTML = buildSummaryHTML(
+        result.patient_info, result.summary, result.pdf_name);
       summarySection.style.display = 'block';
       summarySection.scrollIntoView({ behavior: 'smooth' });
 
-    } catch (error) {
-      console.error('Error:', error);
-      summaryContent.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-          <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${error.message || 'Failed to connect to server'}
-        </div>
-      `;
-      summarySection.style.display = 'block';
-      summarySection.scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+      showAlert(summaryContent, summarySection,
+        err.message || 'Failed to connect to server');
     } finally {
-      loader.style.display = 'none';
+      loader.style.display      = 'none';
       loadingText.style.display = 'none';
-      submitButton.disabled = false;
+      submitBtn.disabled        = false;
     }
   });
 
-  // Function to display summary
-  function displaySummary(result) {
-    const summaryContent = document.getElementById('summaryContent');
-    const patient = result.patient_info;
-    const summary = result.summary;
+  // ── Open split modal ───────────────────────────────────
+  function openReportModal() {
+    if (!_result) return;
 
-    // Risk level badge
-    const riskBadgeClass = {
-      'critical': 'badge-risk-critical',
-      'high': 'badge-risk-high',
-      'moderate': 'badge-risk-moderate',
-      'low': 'badge-risk-low'
-    }[summary.risk_level?.toLowerCase()] || 'bg-secondary';
+    const { patient_info, summary, pdf_name } = _result;
 
-    // Urgency badge
-    const urgencyBadgeClass = {
-      'immediate': 'badge-urgency-immediate',
-      'urgent': 'badge-urgency-urgent',
-      'soon': 'badge-urgency-soon',
-      'routine': 'badge-urgency-routine'
-    }[summary.urgency?.toLowerCase()] || 'bg-secondary';
+    // Populate left panel
+    document.getElementById('modalSummaryPanel').innerHTML =
+      buildSummaryHTML(patient_info, summary, pdf_name);
 
-    let html = `
-      <!-- Patient Information -->
+    // Populate right panel
+    document.getElementById('modalPdfName').textContent = pdf_name;
+    const dlLink    = document.getElementById('modalPdfDownload');
+    const container = document.getElementById('pdfViewerContainer');
+
+    if (_pdfUrl) {
+      dlLink.href     = _pdfUrl;
+      dlLink.download = pdf_name;
+      dlLink.style.display = '';
+      container.innerHTML  =
+        `<iframe src="${_pdfUrl}" style="flex:1;width:100%;height:100%;border:none;"></iframe>`;
+    } else {
+      dlLink.style.display = 'none';
+      container.innerHTML  = `
+        <div class="pdf-placeholder">
+          <i class="fas fa-file-pdf fa-4x mb-3" style="color:#adb5bd;"></i>
+          <p>PDF preview not available.<br>Re-upload the file to enable preview.</p>
+        </div>`;
+    }
+
+    new bootstrap.Modal(document.getElementById('reportModal')).show();
+  }
+
+  // ── Shared summary HTML builder ────────────────────────
+  function buildSummaryHTML(patient, summary, pdfName) {
+    const riskMap = {
+      critical:'badge-risk-critical', high:'badge-risk-high',
+      moderate:'badge-risk-moderate', low:'badge-risk-low'
+    };
+    const urgMap = {
+      immediate:'badge-urg-immediate', urgent:'badge-urg-urgent',
+      soon:'badge-urg-soon', routine:'badge-urg-routine'
+    };
+
+    const riskCls   = riskMap[(summary.risk_level||'').toLowerCase()] || 'bg-secondary';
+    const urgCls    = urgMap[(summary.urgency||'').toLowerCase()]     || 'bg-secondary';
+    const riskColor = ['critical','high'].includes((summary.risk_level||'').toLowerCase())
+      ? '#dc3545' : '#0d6efd';
+
+    return `
+      <!-- Patient Info -->
       <div class="summary-section">
         <h4><i class="fas fa-user-circle"></i> Patient Information</h4>
-        <div class="row">
-          <div class="col-md-4">
-            <strong><i class="fas fa-id-card"></i> Name:</strong> ${patient.name}
-          </div>
-          <div class="col-md-4">
-            <strong><i class="fas fa-birthday-cake"></i> Age:</strong> ${patient.age} years
-          </div>
-          <div class="col-md-4">
-            <strong><i class="fas fa-venus-mars"></i> Gender:</strong> ${patient.gender}
-          </div>
+        <div class="row g-2 mb-2">
+          <div class="col-sm-4"><strong>Name:</strong> ${patient.name}</div>
+          <div class="col-sm-4"><strong>Age:</strong> ${patient.age} yrs</div>
+          <div class="col-sm-4"><strong>Gender:</strong> ${patient.gender}</div>
         </div>
-        ${patient.other_details !== 'None' ? `
-        <div class="mt-2">
+        ${patient.other_details && patient.other_details !== 'None' ? `
+        <div class="mb-1">
           <strong><i class="fas fa-notes-medical"></i> Medical History:</strong>
-          <p class="mb-0 mt-1">${patient.other_details}</p>
-        </div>
-        ` : ''}
-        <div class="mt-2">
-          <strong><i class="fas fa-file-pdf"></i> Report:</strong> ${result.pdf_name}
+          <span class="text-muted ms-1">${patient.other_details}</span>
+        </div>` : ''}
+        <div>
+          <strong><i class="fas fa-file-pdf text-danger"></i> Report:</strong>
+          <span class="text-muted ms-1">${pdfName}</span>
         </div>
       </div>
 
-      <!-- Critical Alert Section -->
-      <div class="summary-section" style="border-left-color: ${summary.risk_level === 'critical' || summary.risk_level === 'high' ? '#dc3545' : '#0d6efd'};">
+      <!-- Risk Assessment -->
+      <div class="summary-section" style="border-left-color:${riskColor};">
         <h4><i class="fas fa-exclamation-triangle"></i> Risk Assessment</h4>
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <strong>Risk Level:</strong>
-            <span class="badge ${riskBadgeClass} ms-2">${(summary.risk_level || 'Unknown').toUpperCase()}</span>
+        <div class="d-flex flex-wrap gap-3">
+          <div><strong>Risk Level:</strong>
+            <span class="badge ${riskCls} ms-1">${(summary.risk_level||'Unknown').toUpperCase()}</span>
           </div>
-          <div>
-            <strong>Urgency:</strong>
-            <span class="badge ${urgencyBadgeClass} ms-2">${(summary.urgency || 'Routine').toUpperCase()}</span>
+          <div><strong>Urgency:</strong>
+            <span class="badge ${urgCls} ms-1">${(summary.urgency||'Routine').toUpperCase()}</span>
           </div>
-          <div>
-            <strong>Follow-up Required:</strong>
-            <span class="badge ${summary.follow_up_required === 'yes' ? 'bg-warning' : 'bg-success'} ms-2">
-              ${summary.follow_up_required === 'yes' ? 'YES' : 'NO'}
+          <div><strong>Follow-up:</strong>
+            <span class="badge ms-1 ${summary.follow_up_required==='yes'?'bg-warning text-dark':'bg-success'}">
+              ${summary.follow_up_required==='yes'?'REQUIRED':'NOT REQUIRED'}
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Test Information -->
+      <!-- Test Info -->
       <div class="summary-section">
         <h4><i class="fas fa-flask"></i> Test Information</h4>
         <ul>
-          <li><strong>Test Type:</strong> ${summary.test_type || 'Not specified'}</li>
-          ${summary.test_date ? `<li><strong>Test Date:</strong> ${summary.test_date}</li>` : ''}
+          <li><strong>Test Type:</strong> ${summary.test_type||'Not specified'}</li>
+          ${summary.test_date?`<li><strong>Test Date:</strong> ${summary.test_date}</li>`:''}
         </ul>
       </div>
 
       <!-- Key Findings -->
-      ${summary.key_findings && summary.key_findings.length > 0 ? `
+      ${summary.key_findings?.length?`
       <div class="summary-section">
         <h4><i class="fas fa-search"></i> Key Findings</h4>
         <ul>
-          ${summary.key_findings.map(finding => `<li><i class="fas fa-chevron-right"></i> ${finding}</li>`).join('')}
+          ${summary.key_findings.map(f=>`<li><i class="fas fa-chevron-right"></i> ${f}</li>`).join('')}
         </ul>
-      </div>
-      ` : ''}
+      </div>`:''}
 
       <!-- Abnormal Values -->
-      ${summary.abnormal_values && summary.abnormal_values.length > 0 ? `
+      ${summary.abnormal_values?.length?`
       <div class="summary-section">
         <h4><i class="fas fa-chart-line"></i> Abnormal Values</h4>
-        ${summary.abnormal_values.map(val => `
-          <div class="abnormal-value ${val.status?.toLowerCase()}">
-            <div class="d-flex justify-content-between align-items-center">
+        ${summary.abnormal_values.map(v=>`
+          <div class="abnormal-value ${(v.status||'').toLowerCase()}">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
               <div>
-                <strong>${val.parameter}:</strong>
-                <span class="ms-2">${val.value}</span>
-                <small class="text-muted ms-2">(Normal: ${val.normal_range})</small>
+                <strong>${v.parameter}:</strong>
+                <span class="ms-1">${v.value}</span>
+                <small class="text-muted ms-2">(Normal: ${v.normal_range})</small>
               </div>
-              <span class="badge ${val.status === 'critical' ? 'bg-danger' : val.status === 'high' ? 'bg-warning' : 'bg-info'}">
-                ${(val.status || '').toUpperCase()}
+              <span class="badge ${v.status==='critical'?'bg-danger':v.status==='high'?'bg-warning text-dark':'bg-info'}">
+                ${(v.status||'').toUpperCase()}
               </span>
             </div>
-          </div>
-        `).join('')}
-      </div>
-      ` : ''}
+          </div>`).join('')}
+      </div>`:''}
 
-      <!-- Diagnosis/Impression -->
-      ${summary.diagnosis_impression ? `
+      <!-- Clinical Impression -->
+      ${summary.diagnosis_impression?`
       <div class="summary-section">
         <h4><i class="fas fa-stethoscope"></i> Clinical Impression</h4>
-        <p>${summary.diagnosis_impression}</p>
-      </div>
-      ` : ''}
+        <p class="mb-0">${summary.diagnosis_impression}</p>
+      </div>`:''}
 
       <!-- Recommendations -->
-      ${summary.recommendations && summary.recommendations.length > 0 ? `
-      <div class="summary-section" style="background-color: #d1ecf1; border-left-color: #0dcaf0;">
-        <h4><i class="fas fa-clipboard-list"></i> Recommendations</h4>
+      ${summary.recommendations?.length?`
+      <div class="summary-section" style="background:#d1ecf1;border-left-color:#0dcaf0;">
+        <h4 style="color:#0d6efd;border-color:#0dcaf0;">
+          <i class="fas fa-clipboard-list"></i> Recommendations
+        </h4>
         <ul>
-          ${summary.recommendations.map(rec => `<li><i class="fas fa-check-circle"></i> ${rec}</li>`).join('')}
+          ${summary.recommendations.map(r=>`
+            <li><i class="fas fa-check-circle text-success"></i> ${r}</li>`).join('')}
         </ul>
-      </div>
-      ` : ''}
+      </div>`:''}
+
+      ${summary.parse_error?`
+      <div class="alert alert-warning mt-2">
+        <i class="fas fa-info-circle"></i> AI response could not be fully structured.
+      </div>`:''}
     `;
+  }
 
-    // Show parse error if present
-    if (summary.parse_error) {
-      html += `
-        <div class="alert alert-warning mt-3" role="alert">
-          <i class="fas fa-info-circle"></i> <strong>Note:</strong> The AI response could not be fully structured. Raw summary is included above.
-        </div>
-      `;
-    }
+  // ── Utilities ──────────────────────────────────────────
+  function showAlert(container, section, msg) {
+    container.innerHTML = `
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${msg}
+      </div>`;
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
 
-    summaryContent.innerHTML = html;
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function base64ToBlob(b64, mime) {
+    const bytes = atob(b64);
+    const arr   = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+    return new Blob([arr], { type: mime });
   }
 </script>
 </body>
