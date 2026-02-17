@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class Config:
     """Application configuration"""
     # ADD YOUR GEMINI API KEY HERE
-    GEMINI_API_KEY = "AIzaSyBA1W2X0KprDS4AWHJ3D0oz1pZbV9_QJQ4"
+    GEMINI_API_KEY = "key"
 
     # Gemini model to use
     GEMINI_MODEL = "gemini-2.5-flash"  # Options: gemini-pro, gemini-1.5-pro, gemini-2.0-flash-exp
