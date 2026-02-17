@@ -6,6 +6,7 @@ from typing import Dict, Optional
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from google.generativeai.types import Tool
 
 # Set up logging
 logging.basicConfig(
@@ -49,7 +50,30 @@ if not Config.GEMINI_API_KEY or Config.GEMINI_API_KEY == "your_api_key_here":
 
 # Configure Gemini API
 genai.configure(api_key=Config.GEMINI_API_KEY)
-model = genai.GenerativeModel(Config.GEMINI_MODEL)
+
+# ============================================
+# FILE SEARCH SETUP (RAG SYSTEM)
+# ============================================
+
+logger.info("Uploading medical knowledge file...")
+
+knowledge_file = genai.upload_file(
+    path="medical_knowledge.txt",
+    mime_type="text/plain"
+)
+
+file_search_tool = Tool.from_file_search(
+    files=[knowledge_file.name]
+)
+
+logger.info("File Search Tool created successfully")
+
+
+model = genai.GenerativeModel(
+    model_name=Config.GEMINI_MODEL,
+    tools=[file_search_tool]
+)
+
 logger.info(f"Using Gemini model: {Config.GEMINI_MODEL}")
 
 
@@ -137,25 +161,29 @@ def generate_health_summary(
         # Create a doctor-focused prompt for concise summary
         prompt = (
             f"{patient_context}\n"
-            "You are a medical assistant helping doctors quickly understand patient reports. "
-            "Analyze the medical report in this PDF and provide a CONCISE summary highlighting ONLY the most critical information for doctors.\n\n"
-            "Respond with ONLY valid JSON (no markdown, no code blocks, no extra text) in this exact structure:\n"
+            "You are an expert medical AI assistant.\n\n"
+
+            "IMPORTANT:\n"
+            "Use BOTH:\n"
+            "1. The uploaded patient PDF report\n"
+            "2. The medical reference knowledge base available via file search\n\n"
+
+            "Compare patient values with reference ranges.\n"
+            "Identify abnormalities accurately.\n\n"
+
+            "Return ONLY valid JSON:\n"
+
             "{\n"
-            '  "test_type": "string (e.g., HbA1c Test, Blood Panel, X-Ray)",\n'
+            '  "test_type": "string",\n'
             '  "test_date": "string or null",\n'
-            '  "key_findings": ["critical finding 1", "critical finding 2", "..."],\n'
-            '  "abnormal_values": [{"parameter": "string", "value": "string", "normal_range": "string", "status": "high/low/critical"}],\n'
-            '  "diagnosis_impression": "string - brief diagnosis or clinical impression",\n'
+            '  "key_findings": [],\n'
+            '  "abnormal_values": [],\n'
+            '  "diagnosis_impression": "string",\n'
             '  "risk_level": "low/moderate/high/critical",\n'
-            '  "recommendations": ["recommendation 1", "recommendation 2"],\n'
+            '  "recommendations": [],\n'
             '  "follow_up_required": "yes/no",\n'
             '  "urgency": "routine/soon/urgent/immediate"\n'
-            "}\n\n"
-            "Focus on:\n"
-            "1. Abnormal or concerning values\n"
-            "2. Clinical significance\n"
-            "3. Immediate action items\n"
-            "Keep it brief and actionable for busy doctors."
+            "}\n"
         )
 
         logger.info("Sending prompt to Gemini API")

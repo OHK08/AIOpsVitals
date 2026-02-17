@@ -1,0 +1,39 @@
+MEDICAL REFERENCE KNOWLEDGE BASE
+
+Blood Sugar:
+- Normal fasting: 70–99 mg/dL
+- Prediabetes: 100–125 mg/dL
+- Diabetes: ≥126 mg/dL
+
+HbA1c:
+- Normal: below 5.7%
+- Prediabetes: 5.7–6.4%
+- Diabetes: ≥6.5%
+
+Hemoglobin:
+Male: 13.8–17.2 g/dL
+Female: 12.1–15.1 g/dL
+
+Cholesterol:
+Total:
+- Normal: <200
+- Borderline: 200–239
+- High: ≥240
+
+LDL:
+- Optimal: <100
+- High: ≥160
+
+HDL:
+- Low: <40
+- Good: ≥60
+
+Blood Pressure:
+Normal: <120/80
+Stage 1: 130–139/80–89
+Stage 2: ≥140/90
+
+CRITICAL CONDITIONS:
+- HbA1c above 9% = uncontrolled diabetes
+- Hemoglobin below 8 = severe anemia
+- Glucose above 300 = emergency
