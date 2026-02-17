@@ -10,18 +10,47 @@
   <style>
     .fade-in { animation: fadeIn 1s ease-in-out; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .feature-card:hover { transform: translateY(-5px); transition: 0.3s; cursor: pointer; }
-    .patient-list { max-width: 1000px; margin: 2rem auto; }
+    .feature-card:hover { transform: translateY(-5px); transition: 0.3s; }
+    .patient-list { max-width: 1200px; margin: 2rem auto; }
     .table th, .table td { vertical-align: middle; }
-    .summary-section { background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-    .summary-section h5 { color: #0d6efd; border-bottom: 1px solid #0d6efd; padding-bottom: 0.3rem; }
+    .summary-section {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0d6efd;
+    }
+    .summary-section h5 {
+      color: #0d6efd;
+      border-bottom: 2px solid #0d6efd;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
     .summary-section ul { list-style-type: none; padding-left: 0; }
     .summary-section ul li { margin-bottom: 0.5rem; }
     .summary-section ul li i { margin-right: 0.5rem; color: #0d6efd; }
-    .badge-risk { background-color: #ffc107; }
-    .badge-normal { background-color: #28a745; }
-    .raw-summary { white-space: pre-wrap; font-family: monospace; background-color: #e9ecef; padding: 1rem; border-radius: 5px; }
+    .badge-risk-critical { background-color: #dc3545; }
+    .badge-risk-high { background-color: #fd7e14; }
+    .badge-risk-moderate { background-color: #ffc107; }
+    .badge-risk-low { background-color: #28a745; }
     .details-btn { cursor: pointer; }
+    .abnormal-value {
+      background-color: #fff3cd;
+      border-left: 3px solid #ffc107;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+    }
+    .abnormal-value.critical { background-color: #f8d7da; border-left-color: #dc3545; }
+    .abnormal-value.high { background-color: #fff3cd; border-left-color: #fd7e14; }
+    .abnormal-value.low { background-color: #cff4fc; border-left-color: #0dcaf0; }
+    .patient-row { cursor: pointer; }
+    .patient-row:hover { background-color: #f8f9fa; }
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -72,15 +101,17 @@
 </nav>
 
 <!-- Hero Section -->
-<section class="py-5 bg-light">
+<section class="hero-section">
   <div class="container">
     <div class="row align-items-center">
-      <div class="col-md-4 text-center">
-        <img src="https://www.shutterstock.com/shutterstock/videos/3573903363/thumb/9.jpg?ip=x480" class="img-fluid rounded p-2" alt="Patient Image">
+      <div class="col-md-8">
+        <h1 class="display-6 fw-bold"><i class="fas fa-users"></i> Patient Records</h1>
+        <p class="lead">View and manage patient medical summaries</p>
       </div>
-      <div class="col-md-8 text-center text-md-start">
-        <h1 class="display-6 fw-bold">Patient Details</h1>
-        <p class="lead">View detailed patient information and health summaries.</p>
+      <div class="col-md-4 text-end">
+        <button class="btn btn-light btn-lg" onclick="clearAllRecords()">
+          <i class="fas fa-trash"></i> Clear All Records
+        </button>
       </div>
     </div>
   </div>
@@ -90,121 +121,113 @@
 <section class="patient-list">
   <div class="container">
     <div class="card shadow p-4 feature-card">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr class="text-center">
-            <th scope="col">Patient Name</th>
-            <th scope="col">Age</th>
-            <th scope="col">Other Details</th>
-            <th scope="col">Health Summary</th>
-          </tr>
-        </thead>
-        <tbody id="patientTableBody">
-          <!-- Patient data will be injected here via JavaScript -->
-        </tbody>
-      </table>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4><i class="fas fa-list"></i> Patient List</h4>
+        <span class="badge bg-primary" id="patientCount">0 Patients</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th scope="col"><i class="fas fa-user"></i> Name</th>
+              <th scope="col"><i class="fas fa-birthday-cake"></i> Age</th>
+              <th scope="col"><i class="fas fa-venus-mars"></i> Gender</th>
+              <th scope="col"><i class="fas fa-flask"></i> Test Type</th>
+              <th scope="col"><i class="fas fa-exclamation-triangle"></i> Risk</th>
+              <th scope="col"><i class="fas fa-clock"></i> Date</th>
+              <th scope="col" class="text-center"><i class="fas fa-eye"></i> Action</th>
+            </tr>
+          </thead>
+          <tbody id="patientTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- Footer -->
-<footer class="bg-primary text-white text-center py-4">
+<footer class="bg-primary text-white text-center py-4 mt-5">
   <p>&copy; 2025 OpsVitals. All rights reserved.</p>
   <p>Contact: support@opsvitals.com | Powered by AI</p>
 </footer>
 
+<!-- Modal for detailed view -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-file-medical-alt"></i> Patient Medical Summary</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Content will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Fetch and display patient details
-  async function loadPatientData() {
+  // Load patient data and render table
+  function loadPatientData() {
     try {
-      const response = await fetch('/api/patient_details', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const patientRecords = JSON.parse(localStorage.getItem('patientRecords') || '[]');
+      const tableBody = document.getElementById('patientTableBody');
+      const patientCount = document.getElementById('patientCount');
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      tableBody.innerHTML = '';
+      patientCount.textContent = `${patientRecords.length} Patient${patientRecords.length !== 1 ? 's' : ''}`;
+
+      if (patientRecords.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+              <p class="text-muted">No patient records available. Upload reports from the Health Summary page.</p>
+              <a href="/health_summary" class="btn btn-primary mt-2">
+                <i class="fas fa-plus"></i> Add Patient Report
+              </a>
+            </td>
+          </tr>
+        `;
+        return;
       }
 
-      const patients = await response.json();
-      const tableBody = document.getElementById('patientTableBody');
-      tableBody.innerHTML = ''; // Clear existing content
+      // Sort by timestamp (most recent first)
+      patientRecords.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
-      patients.forEach((patient, index) => {
-        const summary = patient.summary;
-        let summaryHtml = '';
+      patientRecords.forEach((patient, index) => {
+        const info = patient.patient_info || { name: "Unknown", age: "N/A", gender: "N/A" };
+        const summary = patient.summary || {};
 
-        if (summary.error) {
-          // Handle error case
-          summaryHtml = `
-            <div class="alert alert-danger" role="alert">
-              <i class="fas fa-exclamation-circle"></i> Error: ${summary.error}
-            </div>
-          `;
-        } else if (summary.parse_error && summary.raw_summary) {
-          // Handle raw summary (fallback)
-          const rawText = summary.raw_summary;
-          summaryHtml = '<div class="summary-section"><h5>Medical Report Summary (Raw)</h5><ul>';
-          const sections = rawText.split(/(\*\*[^:]+:\*\*)/).filter(s => s.trim());
-          let currentSection = '';
-          for (let part of sections) {
-            if (part.match(/^\*\*.*:\*\*$/)) {
-              currentSection = part.replace(/\*\*/g, '');
-              summaryHtml += `</ul><h5 class="mt-3">${currentSection}</h5><ul>`;
-            } else if (currentSection) {
-              const bullets = part.split(/[\*\-]\s+/).filter(b => b.trim());
-              bullets.forEach(bullet => {
-                if (bullet.trim()) {
-                  summaryHtml += `<li><i class="fas fa-info-circle"></i> ${bullet.trim()}</li>`;
-                }
-              });
-            }
-          }
-          summaryHtml += '</ul></div>';
-        } else {
-          // Handle structured JSON summary
-          summaryHtml = `
-            <div class="summary-section">
-              <ul>
-                <li><i class="fas fa-notes-medical"></i> <strong>Chief Complaint:</strong> ${summary.chief_complaint || 'Not available'}</li>
-                <li><i class="fas fa-history"></i> <strong>Medical History:</strong> ${summary.medical_history || 'Not available'}</li>
-              </ul>
-              <h5 class="mt-3">Examination Findings</h5>
-              <ul>
-                ${summary.examination_findings ? summary.examination_findings.map(finding => `<li><i class="fas fa-stethoscope"></i> ${finding}</li>`).join('') : '<li><i class="fas fa-stethoscope"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Diagnoses</h5>
-              <ul>
-                ${summary.diagnoses ? summary.diagnoses.map(diag => `<li><i class="fas fa-diagnoses"></i> ${diag} ${diag.includes('Prediabetes') ? '<span class="badge badge-risk">At Risk</span>' : '<span class="badge badge-normal">Normal</span>'}</li>`).join('') : '<li><i class="fas fa-diagnoses"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Treatments/Recommendations</h5>
-              <ul>
-                ${summary.treatments ? summary.treatments.map(treatment => `<li><i class="fas fa-prescription"></i> ${treatment}</li>`).join('') : '<li><i class="fas fa-prescription"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Other Notable Details</h5>
-              <ul>
-                ${summary.other_details ? summary.other_details.map(detail => `<li><i class="fas fa-info-circle"></i> ${detail}</li>`).join('') : '<li><i class="fas fa-info-circle"></i> Not available</li>'}
-              </ul>
-            </div>
-          `;
-        }
+        // Risk badge
+        const riskLevel = (summary.risk_level || 'unknown').toLowerCase();
+        const riskBadgeClass = {
+          'critical': 'badge-risk-critical',
+          'high': 'badge-risk-high',
+          'moderate': 'badge-risk-moderate',
+          'low': 'badge-risk-low'
+        }[riskLevel] || 'bg-secondary';
 
-        // Create collapsible row for summary to keep table compact
+        // Format date
+        const timestamp = patient.timestamp ? new Date(patient.timestamp).toLocaleDateString() : 'N/A';
+
         const row = document.createElement('tr');
+        row.className = 'patient-row';
         row.innerHTML = `
-          <td>${patient.patient_info.name || 'Unknown'}</td>
-          <td>${patient.patient_info.age || 'N/A'}</td>
-          <td>${patient.patient_info.other_details || 'None'}</td>
-          <td>
-            <button class="btn btn-primary btn-sm details-btn" type="button" data-bs-toggle="collapse" data-bs-target="#summaryCollapse${index}">
-              View Summary
+          <td><strong>${info.name}</strong></td>
+          <td>${info.age}</td>
+          <td>${info.gender}</td>
+          <td>${summary.test_type || 'Not specified'}</td>
+          <td><span class="badge ${riskBadgeClass}">${(summary.risk_level || 'Unknown').toUpperCase()}</span></td>
+          <td>${timestamp}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-primary" onclick="showDetails(${index})">
+              <i class="fas fa-eye"></i> View
             </button>
-            <div class="collapse mt-2" id="summaryCollapse${index}">
-              <div class="card card-body">
-                ${summaryHtml}
-              </div>
-            </div>
           </td>
         `;
         tableBody.appendChild(row);
@@ -214,8 +237,8 @@
       const tableBody = document.getElementById('patientTableBody');
       tableBody.innerHTML = `
         <tr>
-          <td colspan="4">
-            <div class="alert alert-danger text-center" role="alert">
+          <td colspan="7" class="text-center">
+            <div class="alert alert-danger" role="alert">
               <i class="fas fa-exclamation-circle"></i> Error loading patient data: ${error.message}
             </div>
           </td>
@@ -224,9 +247,145 @@
     }
   }
 
-  // Load patient data on page load
+  // Show detailed view in modal
+  function showDetails(index) {
+    const patientRecords = JSON.parse(localStorage.getItem('patientRecords') || '[]');
+    const patient = patientRecords[index];
+
+    if (!patient) return;
+
+    const info = patient.patient_info;
+    const summary = patient.summary;
+
+    // Risk level badge
+    const riskBadgeClass = {
+      'critical': 'badge-risk-critical',
+      'high': 'badge-risk-high',
+      'moderate': 'badge-risk-moderate',
+      'low': 'badge-risk-low'
+    }[(summary.risk_level || '').toLowerCase()] || 'bg-secondary';
+
+    // Urgency badge
+    const urgencyBadgeClass = {
+      'immediate': 'bg-danger',
+      'urgent': 'bg-warning',
+      'soon': 'bg-info',
+      'routine': 'bg-secondary'
+    }[(summary.urgency || '').toLowerCase()] || 'bg-secondary';
+
+    let html = `
+      <!-- Patient Information -->
+      <div class="summary-section">
+        <h5><i class="fas fa-user-circle"></i> Patient Information</h5>
+        <div class="row">
+          <div class="col-md-3"><strong>Name:</strong> ${info.name}</div>
+          <div class="col-md-3"><strong>Age:</strong> ${info.age} years</div>
+          <div class="col-md-3"><strong>Gender:</strong> ${info.gender}</div>
+          <div class="col-md-3"><strong>Report:</strong> ${patient.pdf_name}</div>
+        </div>
+        ${info.other_details && info.other_details !== 'None' ? `
+        <div class="mt-2">
+          <strong>Medical History:</strong>
+          <p class="mb-0 mt-1">${info.other_details}</p>
+        </div>
+        ` : ''}
+      </div>
+
+      <!-- Risk Assessment -->
+      <div class="summary-section" style="border-left-color: ${(summary.risk_level === 'critical' || summary.risk_level === 'high') ? '#dc3545' : '#0d6efd'};">
+        <h5><i class="fas fa-exclamation-triangle"></i> Risk Assessment</h5>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Risk Level:</strong>
+            <span class="badge ${riskBadgeClass} ms-2">${(summary.risk_level || 'Unknown').toUpperCase()}</span>
+          </div>
+          <div class="col-md-4">
+            <strong>Urgency:</strong>
+            <span class="badge ${urgencyBadgeClass} ms-2">${(summary.urgency || 'Routine').toUpperCase()}</span>
+          </div>
+          <div class="col-md-4">
+            <strong>Follow-up:</strong>
+            <span class="badge ${summary.follow_up_required === 'yes' ? 'bg-warning' : 'bg-success'} ms-2">
+              ${summary.follow_up_required === 'yes' ? 'REQUIRED' : 'NOT REQUIRED'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Information -->
+      <div class="summary-section">
+        <h5><i class="fas fa-flask"></i> Test Information</h5>
+        <ul>
+          <li><strong>Test Type:</strong> ${summary.test_type || 'Not specified'}</li>
+          ${summary.test_date ? `<li><strong>Test Date:</strong> ${summary.test_date}</li>` : ''}
+        </ul>
+      </div>
+
+      <!-- Key Findings -->
+      ${summary.key_findings && summary.key_findings.length > 0 ? `
+      <div class="summary-section">
+        <h5><i class="fas fa-search"></i> Key Findings</h5>
+        <ul>
+          ${summary.key_findings.map(finding => `<li><i class="fas fa-chevron-right"></i> ${finding}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+
+      <!-- Abnormal Values -->
+      ${summary.abnormal_values && summary.abnormal_values.length > 0 ? `
+      <div class="summary-section">
+        <h5><i class="fas fa-chart-line"></i> Abnormal Values</h5>
+        ${summary.abnormal_values.map(val => `
+          <div class="abnormal-value ${(val.status || '').toLowerCase()}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${val.parameter}:</strong>
+                <span class="ms-2">${val.value}</span>
+                <small class="text-muted ms-2">(Normal: ${val.normal_range})</small>
+              </div>
+              <span class="badge ${val.status === 'critical' ? 'bg-danger' : val.status === 'high' ? 'bg-warning' : 'bg-info'}">
+                ${(val.status || '').toUpperCase()}
+              </span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ` : ''}
+
+      <!-- Diagnosis/Impression -->
+      ${summary.diagnosis_impression ? `
+      <div class="summary-section">
+        <h5><i class="fas fa-stethoscope"></i> Clinical Impression</h5>
+        <p>${summary.diagnosis_impression}</p>
+      </div>
+      ` : ''}
+
+      <!-- Recommendations -->
+      ${summary.recommendations && summary.recommendations.length > 0 ? `
+      <div class="summary-section" style="background-color: #d1ecf1; border-left-color: #0dcaf0;">
+        <h5><i class="fas fa-clipboard-list"></i> Recommendations</h5>
+        <ul>
+          ${summary.recommendations.map(rec => `<li><i class="fas fa-check-circle"></i> ${rec}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+    `;
+
+    document.getElementById('modalBody').innerHTML = html;
+    const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+    modal.show();
+  }
+
+  // Clear all records
+  function clearAllRecords() {
+    if (confirm('Are you sure you want to delete all patient records? This action cannot be undone.')) {
+      localStorage.removeItem('patientRecords');
+      loadPatientData();
+    }
+  }
+
+  // Load data on page load
   document.addEventListener('DOMContentLoaded', loadPatientData);
 </script>
-
 </body>
 </html>

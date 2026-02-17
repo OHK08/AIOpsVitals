@@ -5,7 +5,8 @@ import numpy as np
 import re
 import os
 from werkzeug.utils import secure_filename
-from health_summary import generate_health_summary
+import google.generativeai as genai
+import json
 from chatbot import get_bot_response
 import logging
 
@@ -17,11 +18,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ==========================
+# Gemini Configuration
+# ==========================
+GEMINI_API_KEY = "AIzaSyBA1W2X0KprDS4AWHJ3D0oz1pZbV9_QJQ4"
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# Configure Gemini API
+if GEMINI_API_KEY and GEMINI_API_KEY != "your_api_key_here":
+    genai.configure(api_key=GEMINI_API_KEY)
+    gemini_model = genai.GenerativeModel(GEMINI_MODEL)
+    logger.info(f"Using Gemini model: {GEMINI_MODEL}")
+else:
+    gemini_model = None
+    logger.warning("GEMINI_API_KEY not set. Health summary feature will be disabled.")
+
+# ==========================
 # Upload Configuration
 # ==========================
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -90,6 +107,163 @@ def triage_predict(symptom_text):
         "urgency": urgency,
         "suggested_tests": tests
     }
+
+
+# ==========================
+# Health Summary Generator
+# ==========================
+def generate_health_summary(pdf_file, filename, patient_name, patient_age, patient_gender, other_details=None):
+    """
+    Generate a concise medical summary from a PDF report using Gemini API.
+    """
+    if not gemini_model:
+        return {
+            "status": "error",
+            "pdf_name": filename,
+            "error_message": "Gemini API not configured. Please set GEMINI_API_KEY.",
+            "patient_info": {
+                "name": patient_name,
+                "age": patient_age,
+                "gender": patient_gender,
+                "other_details": other_details or "None"
+            }
+        }
+
+    try:
+        # Secure filename
+        filename = secure_filename(filename)
+
+        # Write PDF bytes to a temporary file
+        temp_pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        with open(temp_pdf_path, 'wb') as f:
+            f.write(pdf_file)
+
+        # Read PDF content and convert to base64 for Gemini
+        logger.info(f"Processing PDF: {temp_pdf_path}")
+
+        # For newer versions of google-generativeai, use direct content generation
+        import base64
+        with open(temp_pdf_path, 'rb') as pdf:
+            pdf_data = base64.standard_b64encode(pdf.read()).decode('utf-8')
+
+        # Create inline data for PDF
+        pdf_part = {
+            "mime_type": "application/pdf",
+            "data": pdf_data
+        }
+
+        # Prepare patient context
+        patient_context = (
+            f"Patient Information:\n"
+            f"- Name: {patient_name}\n"
+            f"- Age: {patient_age}\n"
+            f"- Gender: {patient_gender}\n"
+        )
+        if other_details:
+            patient_context += f"- Medical History/Notes: {other_details}\n"
+
+        # Create prompt for Gemini
+        prompt = (
+            f"{patient_context}\n"
+            "You are a medical assistant helping doctors quickly understand patient reports. "
+            "Analyze the medical report in this PDF and provide a CONCISE summary highlighting ONLY the most critical information for doctors.\n\n"
+            "Respond with ONLY valid JSON (no markdown, no code blocks, no extra text) in this exact structure:\n"
+            "{\n"
+            '  "test_type": "string (e.g., HbA1c Test, Blood Panel, X-Ray)",\n'
+            '  "test_date": "string or null",\n'
+            '  "key_findings": ["critical finding 1", "critical finding 2", "..."],\n'
+            '  "abnormal_values": [{"parameter": "string", "value": "string", "normal_range": "string", "status": "high/low/critical"}],\n'
+            '  "diagnosis_impression": "string - brief diagnosis or clinical impression",\n'
+            '  "risk_level": "low/moderate/high/critical",\n'
+            '  "recommendations": ["recommendation 1", "recommendation 2"],\n'
+            '  "follow_up_required": "yes/no",\n'
+            '  "urgency": "routine/soon/urgent/immediate"\n'
+            "}\n\n"
+            "Focus on:\n"
+            "1. Abnormal or concerning values\n"
+            "2. Clinical significance\n"
+            "3. Immediate action items\n"
+            "Keep it brief and actionable for busy doctors."
+        )
+
+        logger.info("Sending prompt to Gemini API")
+        response = gemini_model.generate_content([
+            prompt,
+            pdf_part
+        ])
+        summary_text = response.text.strip()
+
+        # Clean up markdown code blocks if present
+        if summary_text.startswith("```"):
+            summary_text = summary_text.split("```")[1]
+            if summary_text.startswith("json"):
+                summary_text = summary_text[4:].strip()
+
+        # Parse JSON response
+        try:
+            summary_data = json.loads(summary_text)
+
+            # Ensure all required fields exist with defaults
+            summary_data.setdefault("test_type", "Not specified")
+            summary_data.setdefault("test_date", None)
+            summary_data.setdefault("key_findings", [])
+            summary_data.setdefault("abnormal_values", [])
+            summary_data.setdefault("diagnosis_impression", "Not provided")
+            summary_data.setdefault("risk_level", "unknown")
+            summary_data.setdefault("recommendations", [])
+            summary_data.setdefault("follow_up_required", "unknown")
+            summary_data.setdefault("urgency", "routine")
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Gemini response as JSON: {e}")
+            summary_data = {
+                "test_type": "Unknown",
+                "test_date": None,
+                "key_findings": [summary_text[:500]],
+                "abnormal_values": [],
+                "diagnosis_impression": "Unable to parse structured data",
+                "risk_level": "unknown",
+                "recommendations": ["Review raw report"],
+                "follow_up_required": "yes",
+                "urgency": "routine",
+                "parse_error": True,
+                "raw_summary": summary_text
+            }
+
+        result = {
+            "status": "success",
+            "pdf_name": filename,
+            "patient_info": {
+                "name": patient_name,
+                "age": patient_age,
+                "gender": patient_gender,
+                "other_details": other_details or "None"
+            },
+            "summary": summary_data
+        }
+
+        # Clean up temporary file
+        try:
+            os.remove(temp_pdf_path)
+            logger.info(f"Cleaned up temporary file: {temp_pdf_path}")
+        except Exception as e:
+            logger.warning(f"Failed to clean up temporary file: {e}")
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error processing PDF {filename}: {str(e)}", exc_info=True)
+        return {
+            "status": "error",
+            "pdf_name": filename,
+            "error_message": f"Error processing PDF: {str(e)}",
+            "patient_info": {
+                "name": patient_name,
+                "age": patient_age,
+                "gender": patient_gender,
+                "other_details": other_details or "None"
+            }
+        }
 
 
 # ==========================
@@ -201,12 +375,87 @@ def health_summary_page():
     return render_template("health_summary.html")
 
 
+@app.route("/api/generate_summary", methods=["POST"])
+def api_generate_summary():
+    """API endpoint to generate medical summary"""
+    try:
+        # Get form data
+        patient_name = request.form.get('patient_name', '').strip()
+        patient_age = request.form.get('patient_age', '').strip()
+        patient_gender = request.form.get('patient_gender', '').strip()
+        other_details = request.form.get('other_details', '').strip()
+
+        # Validate required fields
+        if not all([patient_name, patient_age, patient_gender]):
+            return jsonify({
+                "status": "error",
+                "error_message": "Name, age, and gender are required"
+            }), 400
+
+        # Get uploaded file
+        if 'health_report' not in request.files:
+            return jsonify({
+                "status": "error",
+                "error_message": "No file uploaded"
+            }), 400
+
+        file = request.files['health_report']
+
+        if file.filename == '':
+            return jsonify({
+                "status": "error",
+                "error_message": "No file selected"
+            }), 400
+
+        if not allowed_file(file.filename):
+            return jsonify({
+                "status": "error",
+                "error_message": "File must be a PDF"
+            }), 400
+
+        # Read file bytes
+        pdf_bytes = file.read()
+
+        # Log request
+        logger.info(f"Processing report for patient: {patient_name}, Age: {patient_age}, Gender: {patient_gender}")
+
+        # Generate summary
+        result = generate_health_summary(
+            pdf_file=pdf_bytes,
+            filename=file.filename,
+            patient_name=patient_name,
+            patient_age=patient_age,
+            patient_gender=patient_gender,
+            other_details=other_details if other_details else None
+        )
+
+        # Store in patient records if successful
+        if result.get("status") == "success":
+            patient_records.append({
+                "patient_info": result["patient_info"],
+                "summary": result["summary"],
+                "pdf_name": result["pdf_name"]
+            })
+
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error in api_generate_summary: {str(e)}", exc_info=True)
+        return jsonify({
+            "status": "error",
+            "error_message": str(e)
+        }), 500
+
+
+# Legacy endpoint for backward compatibility
 @app.route("/submit_health_summary", methods=["POST"])
 def submit_health_summary():
+    """Legacy endpoint - redirects to new API"""
     try:
         patient_info = {
             "name": request.form.get("patient_name"),
             "age": request.form.get("patient_age"),
+            "gender": request.form.get("patient_gender", "Unknown"),
             "other_details": request.form.get("other_details", "")
         }
 
@@ -218,26 +467,29 @@ def submit_health_summary():
             return jsonify({"error": "No file selected"}), 400
 
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_content = file.read()  # Read file as bytes
-            summary_result = generate_health_summary(file_content, filename, patient_info)
+            pdf_bytes = file.read()
+            result = generate_health_summary(
+                pdf_file=pdf_bytes,
+                filename=file.filename,
+                patient_name=patient_info["name"],
+                patient_age=patient_info["age"],
+                patient_gender=patient_info["gender"],
+                other_details=patient_info["other_details"]
+            )
 
-            # Log the result for debugging
-            logger.info(f"Generated summary result: {summary_result}")
-
-            if 'error' in summary_result.get('summary', {}):
-                return jsonify({"error": summary_result['summary']['error']}), 500
+            if result.get("status") == "error":
+                return jsonify({"error": result.get("error_message")}), 500
 
             patient_records.append({
-                "patient_info": patient_info,
-                "summary": summary_result["summary"],
-                "pdf_name": summary_result["pdf_name"]
+                "patient_info": result["patient_info"],
+                "summary": result["summary"],
+                "pdf_name": result["pdf_name"]
             })
 
             return jsonify({
-                "patient_info": patient_info,
-                "summary": summary_result["summary"],
-                "pdf_name": summary_result["pdf_name"]
+                "patient_info": result["patient_info"],
+                "summary": result["summary"],
+                "pdf_name": result["pdf_name"]
             })
         else:
             return jsonify({"error": "Invalid file format. Only PDFs are allowed."}), 400
@@ -305,6 +557,32 @@ def api_medicine_lookup():
     except Exception as e:
         print("Error in medicine_lookup:", e)
         return jsonify({"error": str(e)}), 500
+
+
+# ==========================
+# Health Check
+# ==========================
+@app.route("/api/health", methods=["GET"])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "healthy",
+        "gemini_configured": gemini_model is not None,
+        "model": GEMINI_MODEL if gemini_model else "Not configured",
+        "version": "1.0.0"
+    })
+
+
+# ==========================
+# Error Handlers
+# ==========================
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    """Handle file too large error"""
+    return jsonify({
+        "status": "error",
+        "error_message": f"File too large. Maximum size is {app.config['MAX_CONTENT_LENGTH'] / (1024 * 1024):.0f}MB"
+    }), 413
 
 
 # ==========================

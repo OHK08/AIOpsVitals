@@ -1,0 +1,119 @@
+==============================
+PATIENT BLOOD REPORTS
+==============================
+
+------------------------------------------------------------
+Patient 1: Rohan Sharma | Age: 34 | Gender: Male
+------------------------------------------------------------
+Hemoglobin: 14.8 g/dL (Normal: 13.5–17.5)
+RBC Count: 5.1 million/µL (Normal: 4.5–5.9)
+WBC Count: 7,200 /µL (Normal: 4,000–11,000)
+Platelet Count: 245,000 /µL (Normal: 150,000–450,000)
+Hematocrit: 44.2% (Normal: 40–50)
+Blood Glucose (Fasting): 89 mg/dL (Normal: 70–100)
+Cholesterol (Total): 172 mg/dL (Normal: <200)
+Triglycerides: 130 mg/dL (Normal: <150)
+LDL: 98 mg/dL (Normal: <130)
+HDL: 52 mg/dL (Normal: >40)
+Remarks: All parameters within normal range. Maintain balanced diet and regular exercise.
+
+------------------------------------------------------------
+Patient 2: Priya Nair | Age: 28 | Gender: Female
+------------------------------------------------------------
+Hemoglobin: 12.5 g/dL (Normal: 12–15.5)
+RBC Count: 4.4 million/µL (Normal: 4.0–5.2)
+WBC Count: 6,800 /µL (Normal: 4,000–11,000)
+Platelet Count: 310,000 /µL (Normal: 150,000–450,000)
+Blood Glucose (Fasting): 82 mg/dL
+Cholesterol (Total): 165 mg/dL
+Vitamin D: 24 ng/mL (Low; Normal: 30–100)
+Remarks: Mild Vitamin D deficiency; supplementation recommended.
+
+------------------------------------------------------------
+Patient 3: Amit Khanna | Age: 45 | Gender: Male
+------------------------------------------------------------
+Hemoglobin: 15.2 g/dL
+RBC Count: 5.3 million/µL
+WBC Count: 9,400 /µL
+Platelet Count: 198,000 /µL
+Blood Glucose (Fasting): 124 mg/dL (Slightly Elevated)
+HbA1c: 6.3% (Prediabetic Range)
+Cholesterol: 208 mg/dL (Borderline High)
+Remarks: Borderline diabetic and high cholesterol. Dietary modification advised.
+
+------------------------------------------------------------
+Patient 4: Neha Singh | Age: 31 | Gender: Female
+------------------------------------------------------------
+Hemoglobin: 11.8 g/dL (Mildly Low)
+RBC Count: 3.9 million/µL
+WBC Count: 7,000 /µL
+Platelet Count: 280,000 /µL
+Iron: 38 µg/dL (Low; Normal: 60–170)
+Ferritin: 9 ng/mL (Low)
+Remarks: Iron-deficiency anemia detected. Iron supplementation recommended.
+
+------------------------------------------------------------
+Patient 5: Arjun Mehta | Age: 52 | Gender: Male
+------------------------------------------------------------
+Hemoglobin: 13.7 g/dL
+WBC Count: 11,800 /µL (Mildly Elevated)
+Neutrophils: 78% (Normal: 40–75%)
+CRP: 8.4 mg/L (High; Normal: <5)
+Remarks: Possible infection or inflammation; further clinical evaluation suggested.
+
+------------------------------------------------------------
+Patient 6: Kavita Rao | Age: 40 | Gender: Female
+------------------------------------------------------------
+Hemoglobin: 12.9 g/dL
+RBC Count: 4.6 million/µL
+WBC Count: 6,200 /µL
+Platelet Count: 270,000 /µL
+Thyroid (TSH): 3.2 µIU/mL (Normal: 0.5–4.5)
+Blood Glucose (Fasting): 95 mg/dL
+Remarks: Normal thyroid and blood parameters. Healthy report.
+
+------------------------------------------------------------
+Patient 7: Rahul Verma | Age: 60 | Gender: Male
+------------------------------------------------------------
+Hemoglobin: 13.1 g/dL
+RBC Count: 4.5 million/µL
+WBC Count: 7,900 /µL
+Platelet Count: 230,000 /µL
+Blood Urea: 38 mg/dL (Normal: 17–43)
+Creatinine: 1.4 mg/dL (Slightly High)
+Remarks: Mild renal function decline; maintain hydration and reduce protein intake.
+
+------------------------------------------------------------
+Patient 8: Sneha Patil | Age: 26 | Gender: Female
+------------------------------------------------------------
+Hemoglobin: 13.4 g/dL
+RBC Count: 4.8 million/µL
+WBC Count: 5,900 /µL
+Platelet Count: 325,000 /µL
+Calcium: 8.6 mg/dL (Normal: 8.5–10.2)
+Vitamin B12: 210 pg/mL (Low; Normal: 200–900)
+Remarks: Borderline B12 deficiency; recommend supplementation and diet adjustment.
+
+------------------------------------------------------------
+Patient 9: Dev Malhotra | Age: 50 | Gender: Male
+------------------------------------------------------------
+Hemoglobin: 16.0 g/dL
+RBC Count: 5.6 million/µL
+WBC Count: 6,400 /µL
+Platelet Count: 215,000 /µL
+Blood Glucose (Fasting): 134 mg/dL (High)
+HbA1c: 7.2% (Diabetic Range)
+Cholesterol: 225 mg/dL (High)
+Remarks: Type 2 Diabetes indicated; immediate medical management advised.
+
+------------------------------------------------------------
+Patient 10: Ananya Iyer | Age: 38 | Gender: Female
+------------------------------------------------------------
+Hemoglobin: 12.2 g/dL
+RBC Count: 4.3 million/µL
+WBC Count: 6,000 /µL
+Platelet Count: 290,000 /µL
+Thyroid (TSH): 5.8 µIU/mL (Slightly High)
+T3: 80 ng/dL (Low-Normal)
+T4: 4.5 µg/dL (Low)
+Remarks: Early hypothyroidism suspected; thyroid medication evaluation advised.

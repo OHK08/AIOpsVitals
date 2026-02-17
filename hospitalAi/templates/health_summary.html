@@ -9,20 +9,16 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     .hero-bg {
-      background-image: url('https://www.shutterstock.com/image-vector/patients-queue-doctor-treatment-people-260nw-2473451347.jpg');
-      background-size: cover;
-      background-position: center;
-      background-blend-mode: overlay;
-      background-color: rgba(255, 255, 255, 0.5);
-      color: black;
-      padding: 6rem 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4rem 0;
       text-align: center;
     }
     .fade-in { animation: fadeIn 1s ease-in-out; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .feature-card:hover { transform: translateY(-5px); transition: 0.3s; cursor: pointer; }
-    .form-section { max-width: 600px; margin: 2rem auto; }
-    .summary-card { max-width: 800px; margin: 2rem auto; }
+    .feature-card:hover { transform: translateY(-5px); transition: 0.3s; }
+    .form-section { max-width: 700px; margin: 2rem auto; }
+    .summary-card { max-width: 900px; margin: 2rem auto; }
     .loader {
       display: none;
       border: 4px solid #f3f3f3;
@@ -37,16 +33,36 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .summary-section { background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
-    .summary-section h4 { color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 0.5rem; }
+    .summary-section {
+      background-color: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #0d6efd;
+    }
+    .summary-section h4 {
+      color: #0d6efd;
+      border-bottom: 2px solid #0d6efd;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
     .summary-section ul { list-style-type: none; padding-left: 0; }
-    .summary-section ul li { margin-bottom: 0.5rem; }
-    .summary-section ul li i { margin-right: 0.5rem; color: #0d6efd; }
-    .badge-risk { background-color: #ffc107; }
-    .badge-normal { background-color: #28a745; }
+    .summary-section ul li { margin-bottom: 0.75rem; padding: 0.5rem; background: white; border-radius: 4px; }
+    .summary-section ul li i { margin-right: 0.75rem; color: #0d6efd; }
+    .badge-risk-critical { background-color: #dc3545; }
+    .badge-risk-high { background-color: #fd7e14; }
+    .badge-risk-moderate { background-color: #ffc107; }
+    .badge-risk-low { background-color: #28a745; }
+    .badge-urgency-immediate { background-color: #dc3545; }
+    .badge-urgency-urgent { background-color: #fd7e14; }
+    .badge-urgency-soon { background-color: #ffc107; }
+    .badge-urgency-routine { background-color: #6c757d; }
+    .abnormal-value { background-color: #fff3cd; border-left: 3px solid #ffc107; padding: 0.5rem; margin: 0.5rem 0; }
+    .abnormal-value.critical { background-color: #f8d7da; border-left-color: #dc3545; }
+    .abnormal-value.high { background-color: #fff3cd; border-left-color: #fd7e14; }
+    .abnormal-value.low { background-color: #cff4fc; border-left-color: #0dcaf0; }
     .summary-content { font-size: 1rem; line-height: 1.6; }
-    .alert { max-width: 600px; margin: 0 auto; }
-    .raw-summary { white-space: pre-wrap; font-family: monospace; background-color: #e9ecef; padding: 1rem; border-radius: 5px; }
+    .alert { max-width: 700px; margin: 0 auto; }
   </style>
 </head>
 <body class="bg-light">
@@ -96,40 +112,65 @@
   </div>
 </nav>
 
+<!-- Hero Section -->
+<section class="hero-bg">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Medical Report Analysis</h1>
+    <p class="lead">Upload patient reports for AI-powered summary and analysis</p>
+  </div>
+</section>
+
 <!-- Form Section -->
 <section class="form-section">
   <div class="container">
     <div class="card shadow p-4 feature-card">
-      <h3 class="text-center mb-4">Submit Health Report</h3>
-      <form action="/submit_health_summary" method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label for="patientName" class="form-label">Patient Name</label>
-          <input type="text" class="form-control" id="patientName" name="patient_name" required>
+      <h3 class="text-center mb-4"><i class="fas fa-file-medical"></i> Submit Health Report</h3>
+      <form id="healthReportForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="patientName" class="form-label"><i class="fas fa-user"></i> Patient Name *</label>
+            <input type="text" class="form-control" id="patientName" name="patient_name" required>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="patientAge" class="form-label"><i class="fas fa-birthday-cake"></i> Age *</label>
+            <input type="number" class="form-control" id="patientAge" name="patient_age" min="0" max="150" required>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="patientGender" class="form-label"><i class="fas fa-venus-mars"></i> Gender *</label>
+            <select class="form-select" id="patientGender" name="patient_gender" required>
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
         <div class="mb-3">
-          <label for="patientAge" class="form-label">Age</label>
-          <input type="number" class="form-control" id="patientAge" name="patient_age" required>
+          <label for="otherDetails" class="form-label"><i class="fas fa-notes-medical"></i> Medical History / Notes (Optional)</label>
+          <textarea class="form-control" id="otherDetails" name="other_details" rows="3" placeholder="Known conditions, allergies, current medications, etc."></textarea>
         </div>
         <div class="mb-3">
-          <label for="otherDetails" class="form-label">Other Details (e.g., Medical History)</label>
-          <textarea class="form-control" id="otherDetails" name="other_details" rows="4"></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="healthReport" class="form-label">Health Report (PDF)</label>
+          <label for="healthReport" class="form-label"><i class="fas fa-file-pdf"></i> Health Report (PDF) *</label>
           <input type="file" class="form-control" id="healthReport" name="health_report" accept=".pdf" required>
+          <div class="form-text">Upload medical report, lab results, or diagnostic imaging report in PDF format</div>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Generate Summary</button>
+        <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+          <i class="fas fa-brain"></i> Generate AI Summary
+        </button>
         <div class="loader" id="formLoader"></div>
+        <div id="loadingText" class="text-center mt-2" style="display: none; color: #6c757d;">
+          <small>Analyzing report with AI... This may take 10-30 seconds</small>
+        </div>
       </form>
     </div>
   </div>
 </section>
 
-<!-- Summary Section (Placeholder, populated dynamically) -->
+<!-- Summary Section -->
 <section class="summary-card" id="summarySection" style="display: none;">
   <div class="container">
     <div class="card shadow p-4 feature-card">
-      <h3 class="text-center mb-4">Health Summary</h3>
+      <h3 class="text-center mb-4"><i class="fas fa-file-medical-alt"></i> Medical Summary</h3>
       <div id="summaryContent" class="summary-content">
         <!-- Summary will be injected here via JavaScript -->
       </div>
@@ -138,145 +179,253 @@
 </section>
 
 <!-- Footer -->
-<footer class="bg-primary text-white text-center py-4">
+<footer class="bg-primary text-white text-center py-4 mt-5">
   <p>&copy; 2025 OpsVitals. All rights reserved.</p>
   <p>Contact: support@opsvitals.com | Powered by AI</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Client-side script to handle form submission, display loader, and show formatted summary
-  document.querySelector('form').addEventListener('submit', async (e) => {
+  // Form submission handler
+  document.getElementById('healthReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+
+    const form = e.target;
     const loader = document.getElementById('formLoader');
-    const submitButton = e.target.querySelector('button[type="submit"]');
+    const loadingText = document.getElementById('loadingText');
+    const submitButton = document.getElementById('submitBtn');
     const summarySection = document.getElementById('summarySection');
     const summaryContent = document.getElementById('summaryContent');
 
-    // Show loader and disable button
+    // Get form data
+    const formData = new FormData(form);
+    const patientName = formData.get('patient_name').trim();
+    const patientAge = formData.get('patient_age').trim();
+    const patientGender = formData.get('patient_gender');
+    const otherDetails = formData.get('other_details').trim();
+    const fileInput = document.getElementById('healthReport');
+
+    // Validate inputs
+    if (!patientName || !patientAge || !patientGender || !fileInput.files || !fileInput.files[0]) {
+      summaryContent.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-circle"></i> Please fill all required fields (Name, Age, Gender) and upload a PDF file.
+        </div>
+      `;
+      summarySection.style.display = 'block';
+      summarySection.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    if (!fileInput.files[0].name.toLowerCase().endsWith('.pdf')) {
+      summaryContent.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-circle"></i> Please upload a valid PDF file.
+        </div>
+      `;
+      summarySection.style.display = 'block';
+      summarySection.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    // Show loader
     loader.style.display = 'block';
+    loadingText.style.display = 'block';
     submitButton.disabled = true;
+    summarySection.style.display = 'none';
 
     try {
-      const response = await fetch('/submit_health_summary', {
+      // Call the API
+      const response = await fetch('/api/generate_summary', {
         method: 'POST',
         body: formData
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-      }
-
       const result = await response.json();
 
-      if (result.summary) {
-        const summary = result.summary;
-        if (summary.parse_error && summary.raw_summary) {
-          // Fallback: Display raw summary prettily by parsing sections
-          const rawText = summary.raw_summary;
-          let formattedHtml = '<div class="summary-section"><h4><i class="fas fa-file-medical"></i> Medical Report Summary (Raw)</h4>';
-
-          // Simple parsing for sections based on example output (e.g., **Patient Information:**, **Medical Report Summary:**)
-          const sections = rawText.split(/(\*\*[^:]+:\*\*)/).filter(s => s.trim());
-          let currentSection = '';
-          for (let part of sections) {
-            if (part.match(/^\*\*.*:\*\*$/)) {
-              currentSection = part.replace(/\*\*/g, '');
-              formattedHtml += `<h5 class="mt-3">${currentSection}</h5><ul>`;
-            } else if (currentSection) {
-              // Split into bullet points (lines starting with * or -)
-              const bullets = part.split(/[\*\-]\s+/).filter(b => b.trim());
-              bullets.forEach(bullet => {
-                if (bullet.trim()) {
-                  formattedHtml += `<li><i class="fas fa-info-circle"></i> ${bullet.trim()}</li>`;
-                }
-              });
-              formattedHtml += '</ul>';
-            }
-          }
-          formattedHtml += '</div>';
-
-          // Add Patient Info section
-          formattedHtml = `
-            <div class="summary-section">
-              <h4><i class="fas fa-user"></i> Patient Information</h4>
-              <ul>
-                <li><i class="fas fa-id-card"></i> <strong>Name:</strong> ${result.patient_info.name || 'Not provided'}</li>
-                <li><i class="fas fa-calendar-alt"></i> <strong>Age:</strong> ${result.patient_info.age || 'Not provided'}</li>
-                <li><i class="fas fa-user-md"></i> <strong>Other Details:</strong> ${result.patient_info.other_details || 'None'}</li>
-              </ul>
-            </div>
-            ${formattedHtml}
-          `;
-          summaryContent.innerHTML = formattedHtml;
-        } else if (!summary.error) {
-          // Structured JSON display (as before)
-          summaryContent.innerHTML = `
-            <div class="summary-section">
-              <h4><i class="fas fa-user"></i> Patient Information</h4>
-              <ul>
-                <li><i class="fas fa-id-card"></i> <strong>Name:</strong> ${result.patient_info.name || 'Not provided'}</li>
-                <li><i class="fas fa-calendar-alt"></i> <strong>Age:</strong> ${result.patient_info.age || 'Not provided'}</li>
-                <li><i class="fas fa-user-md"></i> <strong>Other Details:</strong> ${result.patient_info.other_details || 'None'}</li>
-              </ul>
-            </div>
-            <div class="summary-section mt-4">
-              <h4><i class="fas fa-file-medical"></i> Medical Report Summary</h4>
-              <ul>
-                <li><i class="fas fa-notes-medical"></i> <strong>Chief Complaint:</strong> ${summary.chief_complaint || 'Not available'}</li>
-                <li><i class="fas fa-history"></i> <strong>Medical History:</strong> ${summary.medical_history || 'Not available'}</li>
-              </ul>
-              <h5 class="mt-3">Examination Findings</h5>
-              <ul>
-                ${summary.examination_findings ? summary.examination_findings.map(finding => `<li><i class="fas fa-stethoscope"></i> ${finding}</li>`).join('') : '<li><i class="fas fa-stethoscope"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Diagnoses</h5>
-              <ul>
-                ${summary.diagnoses ? summary.diagnoses.map(diag => `<li><i class="fas fa-diagnoses"></i> ${diag} ${diag.includes('Prediabetes') ? '<span class="badge badge-risk">At Risk</span>' : '<span class="badge badge-normal">Normal</span>'}</li>`).join('') : '<li><i class="fas fa-diagnoses"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Treatments/Recommendations</h5>
-              <ul>
-                ${summary.treatments ? summary.treatments.map(treatment => `<li><i class="fas fa-prescription"></i> ${treatment}</li>`).join('') : '<li><i class="fas fa-prescription"></i> Not available</li>'}
-              </ul>
-              <h5 class="mt-3">Other Notable Details</h5>
-              <ul>
-                ${summary.other_details ? summary.other_details.map(detail => `<li><i class="fas fa-info-circle"></i> ${detail}</li>`).join('') : '<li><i class="fas fa-info-circle"></i> Not available</li>'}
-              </ul>
-            </div>
-          `;
-        } else {
-          // Error in summary
-          summaryContent.innerHTML = `
-            <div class="alert alert-danger" role="alert">
-              <i class="fas fa-exclamation-circle"></i> Error generating summary: ${summary.error}
-            </div>
-          `;
-        }
-        summarySection.style.display = 'block';
-        summarySection.scrollIntoView({ behavior: 'smooth' });  // Smooth scroll to summary
-      } else {
+      if (result.status === 'error') {
         summaryContent.innerHTML = `
           <div class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle"></i> Error generating summary: ${result.error || 'Unknown error'}
+            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${result.error_message || 'Failed to process report'}
           </div>
         `;
         summarySection.style.display = 'block';
+        summarySection.scrollIntoView({ behavior: 'smooth' });
+        return;
       }
+
+      // Save to localStorage
+      const patientRecord = {
+        patient_info: result.patient_info,
+        summary: result.summary,
+        pdf_name: result.pdf_name,
+        timestamp: new Date().toISOString()
+      };
+
+      let patientRecords = JSON.parse(localStorage.getItem('patientRecords') || '[]');
+      patientRecords.push(patientRecord);
+      localStorage.setItem('patientRecords', JSON.stringify(patientRecords));
+
+      // Display summary
+      displaySummary(result);
+      summarySection.style.display = 'block';
+      summarySection.scrollIntoView({ behavior: 'smooth' });
+
     } catch (error) {
+      console.error('Error:', error);
       summaryContent.innerHTML = `
         <div class="alert alert-danger" role="alert">
-          <i class="fas fa-exclamation-circle"></i> Error submitting form: ${error.message}
+          <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${error.message || 'Failed to connect to server'}
         </div>
       `;
       summarySection.style.display = 'block';
+      summarySection.scrollIntoView({ behavior: 'smooth' });
     } finally {
-      // Hide loader and re-enable button
       loader.style.display = 'none';
+      loadingText.style.display = 'none';
       submitButton.disabled = false;
     }
   });
-</script>
 
+  // Function to display summary
+  function displaySummary(result) {
+    const summaryContent = document.getElementById('summaryContent');
+    const patient = result.patient_info;
+    const summary = result.summary;
+
+    // Risk level badge
+    const riskBadgeClass = {
+      'critical': 'badge-risk-critical',
+      'high': 'badge-risk-high',
+      'moderate': 'badge-risk-moderate',
+      'low': 'badge-risk-low'
+    }[summary.risk_level?.toLowerCase()] || 'bg-secondary';
+
+    // Urgency badge
+    const urgencyBadgeClass = {
+      'immediate': 'badge-urgency-immediate',
+      'urgent': 'badge-urgency-urgent',
+      'soon': 'badge-urgency-soon',
+      'routine': 'badge-urgency-routine'
+    }[summary.urgency?.toLowerCase()] || 'bg-secondary';
+
+    let html = `
+      <!-- Patient Information -->
+      <div class="summary-section">
+        <h4><i class="fas fa-user-circle"></i> Patient Information</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <strong><i class="fas fa-id-card"></i> Name:</strong> ${patient.name}
+          </div>
+          <div class="col-md-4">
+            <strong><i class="fas fa-birthday-cake"></i> Age:</strong> ${patient.age} years
+          </div>
+          <div class="col-md-4">
+            <strong><i class="fas fa-venus-mars"></i> Gender:</strong> ${patient.gender}
+          </div>
+        </div>
+        ${patient.other_details !== 'None' ? `
+        <div class="mt-2">
+          <strong><i class="fas fa-notes-medical"></i> Medical History:</strong>
+          <p class="mb-0 mt-1">${patient.other_details}</p>
+        </div>
+        ` : ''}
+        <div class="mt-2">
+          <strong><i class="fas fa-file-pdf"></i> Report:</strong> ${result.pdf_name}
+        </div>
+      </div>
+
+      <!-- Critical Alert Section -->
+      <div class="summary-section" style="border-left-color: ${summary.risk_level === 'critical' || summary.risk_level === 'high' ? '#dc3545' : '#0d6efd'};">
+        <h4><i class="fas fa-exclamation-triangle"></i> Risk Assessment</h4>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Risk Level:</strong>
+            <span class="badge ${riskBadgeClass} ms-2">${(summary.risk_level || 'Unknown').toUpperCase()}</span>
+          </div>
+          <div>
+            <strong>Urgency:</strong>
+            <span class="badge ${urgencyBadgeClass} ms-2">${(summary.urgency || 'Routine').toUpperCase()}</span>
+          </div>
+          <div>
+            <strong>Follow-up Required:</strong>
+            <span class="badge ${summary.follow_up_required === 'yes' ? 'bg-warning' : 'bg-success'} ms-2">
+              ${summary.follow_up_required === 'yes' ? 'YES' : 'NO'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Information -->
+      <div class="summary-section">
+        <h4><i class="fas fa-flask"></i> Test Information</h4>
+        <ul>
+          <li><strong>Test Type:</strong> ${summary.test_type || 'Not specified'}</li>
+          ${summary.test_date ? `<li><strong>Test Date:</strong> ${summary.test_date}</li>` : ''}
+        </ul>
+      </div>
+
+      <!-- Key Findings -->
+      ${summary.key_findings && summary.key_findings.length > 0 ? `
+      <div class="summary-section">
+        <h4><i class="fas fa-search"></i> Key Findings</h4>
+        <ul>
+          ${summary.key_findings.map(finding => `<li><i class="fas fa-chevron-right"></i> ${finding}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+
+      <!-- Abnormal Values -->
+      ${summary.abnormal_values && summary.abnormal_values.length > 0 ? `
+      <div class="summary-section">
+        <h4><i class="fas fa-chart-line"></i> Abnormal Values</h4>
+        ${summary.abnormal_values.map(val => `
+          <div class="abnormal-value ${val.status?.toLowerCase()}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${val.parameter}:</strong>
+                <span class="ms-2">${val.value}</span>
+                <small class="text-muted ms-2">(Normal: ${val.normal_range})</small>
+              </div>
+              <span class="badge ${val.status === 'critical' ? 'bg-danger' : val.status === 'high' ? 'bg-warning' : 'bg-info'}">
+                ${(val.status || '').toUpperCase()}
+              </span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ` : ''}
+
+      <!-- Diagnosis/Impression -->
+      ${summary.diagnosis_impression ? `
+      <div class="summary-section">
+        <h4><i class="fas fa-stethoscope"></i> Clinical Impression</h4>
+        <p>${summary.diagnosis_impression}</p>
+      </div>
+      ` : ''}
+
+      <!-- Recommendations -->
+      ${summary.recommendations && summary.recommendations.length > 0 ? `
+      <div class="summary-section" style="background-color: #d1ecf1; border-left-color: #0dcaf0;">
+        <h4><i class="fas fa-clipboard-list"></i> Recommendations</h4>
+        <ul>
+          ${summary.recommendations.map(rec => `<li><i class="fas fa-check-circle"></i> ${rec}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+    `;
+
+    // Show parse error if present
+    if (summary.parse_error) {
+      html += `
+        <div class="alert alert-warning mt-3" role="alert">
+          <i class="fas fa-info-circle"></i> <strong>Note:</strong> The AI response could not be fully structured. Raw summary is included above.
+        </div>
+      `;
+    }
+
+    summaryContent.innerHTML = html;
+  }
+</script>
 </body>
 </html>
