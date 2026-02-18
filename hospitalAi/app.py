@@ -518,7 +518,8 @@ def api_patient_details():
 # ==========================
 # Medicine Lookup
 # ==========================
-MEDICINE_CSV = "medicine_dataset.csv"
+MEDICINE_CSV = "medicines_with_chemical.csv"
+
 if os.path.exists(MEDICINE_CSV):
     MEDICINES_DF = pd.read_csv(MEDICINE_CSV)
     MEDICINES_DF.columns = [c.strip().lower() for c in MEDICINES_DF.columns]
@@ -536,26 +537,34 @@ def medicine_lookup_page():
 def api_medicine_lookup():
     try:
         data = request.get_json()
-        name = data.get("name", "").strip().lower()
+
+        # 🔹 Updated fields
+        chemical = data.get("chemical", "").strip().lower()
         category = data.get("category", "").strip().lower()
         indication = data.get("indication", "").strip().lower()
 
         if MEDICINES_DF.empty:
             return jsonify([])
 
+        # Convert DF to lowercase for search
         df_lower = MEDICINES_DF.applymap(lambda x: str(x).lower())
 
-        mask = (
-                df_lower["name"].str.contains(name, na=False) &
-                df_lower["category"].str.contains(category, na=False) &
-                df_lower["indication"].str.contains(indication, na=False)
-        )
+        # Flexible filtering (ignore empty filters)
+        mask = True
+
+        if chemical:
+            mask &= df_lower["chemical_name"].str.contains(chemical, na=False)
+        if category:
+            mask &= df_lower["category"].str.contains(category, na=False)
+        if indication:
+            mask &= df_lower["indication"].str.contains(indication, na=False)
 
         results = MEDICINES_DF[mask]
+
         return jsonify(results.to_dict(orient="records") if not results.empty else [])
 
     except Exception as e:
-        print("Error in medicine_lookup:", e)
+        print("❌ Error in medicine_lookup:", e)
         return jsonify({"error": str(e)}), 500
 
 
